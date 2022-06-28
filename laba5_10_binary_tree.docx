@@ -1,0 +1,432 @@
+//10.Преобразовать двунаправленное кольцо в сбалансированное бинарное дерево
+
+#define _CRT_SECURE_NO_WARNINGS
+#define symbolsOfSecondName 30
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <conio.h>
+#include <locale.h>
+#include <Windows.h>
+
+struct nodeOfCircle2
+{
+	char secondName[symbolsOfSecondName];
+	struct nodeOfCircle2* rightNode;
+	struct nodeOfCircle2* leftNode;
+};
+
+struct nodeOfTree
+{
+	char secondName [symbolsOfSecondName];
+	int height;
+
+	int repeats;
+
+	struct nodeOfTree* left;
+	struct nodeOfTree* right;
+};
+
+void creationOrAddingNode(struct nodeOfCircle2 **headOfCircle);
+void fillingInSecondName(struct nodeOfCircle2* node);
+char** createOfArray(struct nodeOfCircle2 *headOfCircle, char**arr, int* amountElementsOfArr);
+
+void showInformation(struct nodeOfCircle2 *head);
+void showDirection(struct nodeOfCircle2 *head, char direction);
+
+int height(struct nodeOfTree* node);
+int bFactor(struct nodeOfTree* node);
+void fixHeight(struct nodeOfTree* node);
+struct nodeOfTree* rotateright(struct nodeOfTree* node);
+struct nodeOfTree* rotateleft(struct nodeOfTree* node);
+struct nodeOfTree* balance(struct nodeOfTree* node);
+struct nodeOfTree* insert(struct nodeOfTree* root, char* keySecondName);
+
+void show_Tree_symmetrically(struct nodeOfTree* root);
+void show_Tree_Directly(struct nodeOfTree* root);
+
+struct nodeOfTree* cleanTree(struct nodeOfTree* root);
+void cleanDataOfStudents(struct nodeOfCircle2 **headOfCircle);
+struct nodeOfCircle2 *napr(char direction, struct nodeOfCircle2 *run);
+void CorrectInput(int* Information);
+
+void main()
+{
+	system("color F0");
+	setlocale(LC_ALL, "Russian");
+	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+	SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+	char Operation;
+	struct nodeOfCircle2* head = NULL;
+	char** arrayOfSecondNames;
+	if (!(arrayOfSecondNames = (char**)calloc(1, sizeof(char))))
+	{
+		puts("Нет свободной памяти");
+		return;
+	}
+	int amountElementsOfArr;
+	struct nodeOfTree* mainRoot = NULL;
+
+	while (1)
+	{
+		printf("\nВыберите операцию, которую Вы хотите выполнить:");
+		puts("\nВид операции: 1-Создать кольцо или дополнить его");
+		puts("                2-Вывод содержимого кольца");
+		puts("                3 Преобразовать двунаправленное кольцо в сбалансированное дерево");
+		puts("                4 Вывод сбалансированного дерева симметричным обходом и освобождение памяти дерева");
+		puts("                5 Очистить кольцо для новых данных");
+		puts("                6 Вывод сбалансированного дерева прямым обходом и освобождение памяти дерева");
+		puts("                0-Выход");
+	start:
+		rewind(stdin);
+		Operation = getchar();
+		switch (Operation)
+		{
+		case '1': creationOrAddingNode(&head);
+			arrayOfSecondNames = createOfArray(head, arrayOfSecondNames, &amountElementsOfArr); break;
+		case '2': showInformation(head); break;
+		case'3':  
+			if (!head)
+			{
+				printf("\nСначала заполните кольцо, преобразовывать нечего ");
+				goto start;
+			}
+			for (int i = 0; i < amountElementsOfArr; i++)
+				mainRoot = insert(mainRoot, arrayOfSecondNames[i]);
+			break;
+		case'4':
+			if (!mainRoot)
+			{
+				printf("\nбинарное дерево пустое");
+				goto start;
+			}
+			show_Tree_symmetrically(mainRoot);  
+			mainRoot=cleanTree(mainRoot);
+			printf("\nПамять дерева очищена"); break;
+		case'5':cleanDataOfStudents(&head); break;
+		case'6': show_Tree_Directly(mainRoot);
+			mainRoot = cleanTree(mainRoot);
+			printf("\nПамять дерева очищена"); break;
+		case '0': cleanDataOfStudents(&head); return;
+		default:printf("\nНеверная операция, попробуйте еще раз"); goto start;
+		}
+	}
+}
+void creationOrAddingNode(struct nodeOfCircle2 **headOfCircle)
+{
+	int amountOfStudents;
+	int count = 1;
+	printf("\nСколько новых студентов вы хотите заполнить?: ");
+	CorrectInput(&amountOfStudents);
+	struct nodeOfCircle2 *behindTheNewNode, *NewNode;
+	if (!(*headOfCircle))
+	{
+		if (!(NewNode = (struct nodeOfCircle2 *)malloc(sizeof(struct nodeOfCircle2))))
+		{
+			puts("\nНет свободной памяти");
+			return;
+		}
+		printf("\nВведите Фамилию %d студента:  ", count++);
+		fillingInSecondName(NewNode);
+		NewNode->leftNode = NewNode->rightNode = NewNode;
+		(*headOfCircle) = NewNode;
+		amountOfStudents--;
+	}
+	else NewNode = (*headOfCircle)->rightNode;
+	while (amountOfStudents != 0)
+	{
+		if (!(behindTheNewNode = (struct nodeOfCircle2 *)malloc(sizeof(struct nodeOfCircle2))))
+		{
+			puts("\nНет свободной памяти");
+			return;
+		}
+		printf("\nВведите Фамилию %d студента:  ", count++);
+		fillingInSecondName(behindTheNewNode);
+		NewNode->leftNode = behindTheNewNode;
+		behindTheNewNode->rightNode = NewNode;
+		NewNode = behindTheNewNode;
+		amountOfStudents--;
+	}
+	NewNode->leftNode = *headOfCircle;
+	(*headOfCircle)->rightNode = NewNode;
+}
+void fillingInSecondName(struct nodeOfCircle2* node)
+{
+	rewind(stdin);
+	gets(node->secondName);
+}
+char** createOfArray(struct nodeOfCircle2 *headOfCircle, char**arr, int* amountElementsOfArr)
+{
+	if (!headOfCircle)
+	{
+		puts("\nСначала введите информацию о студентах");
+		return;
+	}
+	struct nodeOfCircle2 *run;
+	int  count = 0;
+	run = headOfCircle;
+	do
+	{
+		count++;
+		run = run->rightNode;
+	} while (run != headOfCircle);
+	(*amountElementsOfArr) = count;
+	arr = (char**)realloc(arr, count * sizeof(char));
+	for (int i = 0; i < count; i++)
+	{
+		arr[i] = (char*)calloc(symbolsOfSecondName, sizeof(char));
+		arr[i] = headOfCircle->secondName;
+		headOfCircle = headOfCircle->rightNode;
+	}
+	printf("\nВывод информации из массива:\n");
+	for (int i = 0; i < count; i++)
+	{
+		printf("%s  ", arr[i]);
+	}
+	return arr;
+}
+
+void showInformation(struct nodeOfCircle2 *head)
+{
+	char direction;
+start:
+	printf("\nВыберите направление показа: ");
+	printf(" r - по часовой, l - против часовой: ");
+	rewind(stdin);
+	switch (direction = getchar())
+	{
+	case 'r': case 'R': showDirection(head, direction); break;
+	case 'l': case 'L': showDirection(head, direction); break;
+	default:printf("\nНеверная операция, попробуйте еще раз");
+		goto start;
+	}
+}
+void showDirection(struct nodeOfCircle2 *head, char direction)
+{
+	if (!head)
+	{
+		puts("\nСначала введите информацию о студентах");
+		return;
+	}
+	struct nodeOfCircle2 *run;
+	run = head;
+	do
+	{
+		int count = 1;
+		printf("\nИнформация о %d студенте :", count++);
+		printf("\nФамилия: %s", run->secondName);
+		run = napr(direction, run);
+	} while (run != head);
+	puts("\nВывод информации о студенте окончен");
+}
+
+int height(struct nodeOfTree* node)
+{
+	return node ? node->height : 0;  //тернарный оператор, если node!=NULL,то глубина, иначе 0
+}
+int bFactor(struct nodeOfTree* node)
+{
+	if (node->right == NULL && node->left!=NULL)
+	{
+		return (height(node->right) - height(node->left))-1;
+	}
+
+	if (node->right != NULL && node->left == NULL)
+	{
+		return (height(node->right) - height(node->left)) + 1;
+	}
+	if (node->right != NULL && node->left != NULL)
+	{
+		return (height(node->right) - height(node->left));
+	}
+}
+void fixHeight(struct nodeOfTree* node)
+{
+	int leftHeightOfNode = height(node->left);
+	int rightHeightOfNode = height(node->right);
+	node->height = (leftHeightOfNode > rightHeightOfNode ? leftHeightOfNode : rightHeightOfNode) + 1;
+}
+struct nodeOfTree* rotateright(struct nodeOfTree* node) 
+{
+	struct nodeOfTree* leftNode = node->left;
+	node->left = leftNode->right;
+	leftNode->right = node;
+	fixHeight(node);
+	fixHeight(leftNode);
+	return leftNode;
+}
+struct nodeOfTree* rotateleft(struct nodeOfTree* node) 
+{
+	struct nodeOfTree* rightNode = node->right;
+	node->right = rightNode->left;
+	rightNode->left = node;
+	fixHeight(node);
+	fixHeight(rightNode);
+	return rightNode;
+}
+struct nodeOfTree* balance(struct nodeOfTree* node) // балансировка узла p
+{
+	fixHeight(node);     // ведь +1 после рекурсии создания
+	if (bFactor(node) == 2)
+	{
+		if (bFactor(node->right) < 0)
+			node->right = rotateright(node->right);
+		return rotateleft(node);
+	}
+	if (bFactor(node) == -2)
+	{
+		if (bFactor(node->left) > 0)
+			node->left = rotateleft(node->left);
+		return rotateright(node);
+	}
+	return node; // балансировка не нужна
+}
+struct nodeOfTree* insert(struct nodeOfTree* root , char* keySecondName) 
+{
+	if (!root)
+	{
+		struct nodeOfTree* newNode = (struct nodeOfTree*)calloc(1, sizeof(struct nodeOfTree));
+		strcpy(newNode->secondName, keySecondName);
+		(newNode->repeats)++;
+		return newNode;
+	}
+	if (strcmp(keySecondName,root->secondName)<0)
+		root->left = insert(root->left, keySecondName);
+	if (strcmp(keySecondName, root->secondName) > 0)
+		root->right = insert(root->right, keySecondName);
+	if (strcmp(keySecondName, root->secondName) == 0)
+	{
+		(root->repeats)++;
+		return root;
+	}
+	return balance(root);
+}
+
+void show_Tree_symmetrically(struct nodeOfTree* root)
+{
+	if (root)
+	{  
+		if (root->left) show_Tree_symmetrically(root->left);
+		if (root->right) show_Tree_symmetrically(root->right);
+		printf("\nузел содержит :   %s , число встреч %d\n", root->secondName, root->repeats);//симметричный обход
+	}
+}
+void show_Tree_Directly(struct nodeOfTree* root)
+{
+	struct stack    // стек узлов дерева через которые осуществляется движение по ветви 
+	{
+		struct nodeOfTree* tree;            
+		struct stack * next;
+	} *stack, *helpStack =NULL;
+	if (!root)
+	{
+		printf("бинарное дерево пустое\n");
+		return;
+	}
+	int leftFlag = 1;            										
+	stack = (struct stack *)calloc(1, sizeof(struct stack)); 
+	stack->tree = root;                            
+	stack->next = helpStack;                           
+	printf("\nузел содержит :   %s , число встреч %d  ", root->secondName, root->repeats);
+	while (stack || root->right)  // пока стек не пустой и есть движение вправо по дереву
+	{
+		do  // цикл - пока не лист дерева
+		{
+			if (leftFlag && root->left) root = root->left;                    
+			else if (root->right) root = root->right;   
+			leftFlag = 1;                   
+			if (root->left && root->right)      // узел с 2 связями(чтобы вернуться к развилке)
+			{
+				helpStack = stack;             
+				stack = (struct stack *)calloc(1, sizeof(struct stack)); 
+				stack->tree = root;            
+				stack->next = helpStack;             
+			}
+			printf("\nузел содержит :   %s , число встреч %d  ", root->secondName, root->repeats);
+		} while (root->left || root->right);  // цикл - пока не лист дерева
+
+		if (stack)                      
+		{                             
+			root = stack->tree;             
+			helpStack = stack->next;            
+			free(stack);              
+		}
+		stack = helpStack;                   
+		if (root->left && root->right) leftFlag = 0;   
+		else break;                     								
+	}
+}
+
+struct nodeOfTree* cleanTree(struct nodeOfTree* root)
+{
+	if ((root))
+	{  
+		if ((root)->left) cleanTree((root)->left);
+		if ((root)->right) cleanTree((root)->right);
+		free((root));
+	}
+	return NULL;
+}
+void cleanDataOfStudents(struct nodeOfCircle2 **headOfCircle)
+{
+	if (!(*headOfCircle))
+	{
+		printf("\nПамять очищена ");
+		return;
+	}
+	if ((*headOfCircle)->rightNode == (*headOfCircle))
+	{
+		free((*headOfCircle));
+		printf("\nПамять очищена ");
+		(*headOfCircle) = NULL;
+		return;
+	}
+	struct nodeOfCircle2* run;
+	struct nodeOfCircle2* next;
+	run = (*headOfCircle)->rightNode;
+	next = (*headOfCircle)->rightNode->rightNode;
+
+	if ((*headOfCircle)->rightNode->rightNode == (*headOfCircle))
+	{
+		free(run);
+		free((*headOfCircle));
+		printf("\nПамять очищена ");
+		(*headOfCircle) = NULL;
+		return;
+	}
+	do
+	{
+		free(run);
+		run = next;
+		next = next->rightNode;
+	} while (next != (*headOfCircle));
+	free(run);
+	free((*headOfCircle));
+	printf("\nПамять очищена ");
+	(*headOfCircle) = NULL;
+}
+struct nodeOfCircle2 *napr(char direction, struct nodeOfCircle2 *run)
+{
+	switch (direction)
+	{
+	start:
+	case 'r': case 'R': return run->rightNode;   // вправо
+	case 'l': case 'L': return run->leftNode;   // влево
+	}
+}
+void CorrectInput(int* Information)
+{
+	int correct;
+	int flag = 0;
+	correct = scanf("%d", Information);
+	do
+	{
+		if (flag)
+		{
+			printf("Неверный ввод, попробуйте еще раз: ");
+			rewind(stdin);
+			correct = scanf("%d", Information);
+		}
+		flag = 1;
+	} while (!(correct) || (*Information) <= 0);
+}
