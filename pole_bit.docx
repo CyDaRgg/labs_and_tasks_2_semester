@@ -1,0 +1,112 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <Windows.h>
+
+
+////Пример 1. Используя поля бит, написать программу, вычисляющую оста -
+////ток от деления целого числа на два и на четыре.
+//
+//struct Field
+//{
+//	unsigned int lastBit : 1;
+//	unsigned int prelastBit : 1;
+//};
+//
+//int main()
+//{
+//	struct Field *pointer;
+//
+//	int number;
+//	int residue;
+//
+//	setlocale(LC_ALL, "RUS");
+//
+//	printf("Введите число:\n");
+//	scanf_s("%d", &number);
+//
+//	pointer =(struct Field*) &number;
+//
+//
+//	if (pointer->lastBit)
+//	{
+//		residue = 1;
+//	}
+//	else
+//	{
+//		residue = 0;
+//	}
+//
+//	printf("\nОстаток от деления числа %d на 2: %d\n", number, residue);
+//
+//	if (pointer->prelastBit && pointer->lastBit) // если последние два бита
+//// соответственно равны 11,
+//residue = 3; // остаток будет равен трём
+//	else if (pointer->prelastBit && !pointer->lastBit) // если последние два бита
+//	// соответственно равны 10,
+//		residue = 2; //остаток будет равен двум
+//	else if (!pointer->prelastBit && pointer->lastBit) // если последние два бита
+//	// соответственно равны 01,
+//		residue = 1; // остаток будет равен единице
+//	else //если последние два бита соответственно равны 00,
+//		residue = 0; //остаток будет равен нулю
+//	printf("\nОстаток от деления числа %d на 4: %d\n", number, residue);
+//
+//
+//
+//	return 0;
+//}
+
+
+
+//Пример 2. Используя поля бит и объединения можно изменить рассмот -
+//ренную выше программу, вычисляющую остаток от деления целого числа на
+//
+//два и четыре.
+
+
+#include<stdio.h>
+#include<locale.h>
+#include<Windows.h>
+
+struct BitField1
+{
+	unsigned int lastBit : 1;
+};
+
+struct BitField2
+{
+	unsigned int bitCount : 2;
+};
+
+union Fields
+{
+	struct BitField1 field1;
+	struct BitField2 field2;
+};
+
+int main()
+{
+	setlocale(LC_ALL, "RUS");
+	union Fields *pointer;
+	
+	int number, residue2, residue4;
+
+
+	printf("Input your number:");
+	scanf_s("%d", &number);
+
+	pointer =(union Fields*) &number;
+
+	residue2 = pointer->field1.lastBit;
+	residue4 = pointer->field2.bitCount;
+
+	printf("\nОстаток от деления на 2: %d\n", residue2);
+	printf("\nОстаток от деления на 4: %d\n", residue4);
+
+
+
+
+	return 0;
+}
