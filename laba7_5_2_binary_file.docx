@@ -1,0 +1,232 @@
+//5. Дан бинарный файл, содержащий различные даты. Каждая дата – это число, месяц, год.Найти:
+//а) год с наименьшим номером;
+//б) все весенние даты;
+//в) самую позднюю дату.
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <conio.h>
+#include <locale.h>
+#include <Windows.h>
+#include <io.h>
+#include <stdio.h>
+
+struct date
+{
+	int year;
+	int month;
+	int day;
+};
+
+void outputDate(struct date* dt)
+{
+	if(dt->day<10)
+	printf("0%d.", dt->day);
+	else
+		printf("%d.", dt->day);
+
+	if (dt->month < 10)
+		printf("0%d.", dt->month);
+	else
+		printf("%d.", dt->month);
+
+	printf("%d; ", dt->year);
+
+}
+
+FILE* openFile(const char* name, const char* format)
+{
+	FILE* binaryFile;
+
+	if (!(binaryFile = fopen(name, format)))
+	{
+		printf("Файл не может быть создан");
+		exit(-1);
+	}
+	return binaryFile;
+}
+
+
+void inPutDate(struct date*dts)
+{
+	int check;
+	
+	printf("\nВведите число:");
+
+	while (1)
+	{
+		 check = scanf_s("%d", &(dts->day));
+		if (!check || dts->day <= 0 || dts->day >= 32)
+		{
+			printf("\nТакого дня не существует! Введите еще раз:");
+			rewind(stdin);
+			continue;
+		}
+		else
+			break;
+	}
+
+	printf("\nВведите месяц:");
+
+	while (1)
+	{
+		check = scanf_s("%d", &(dts->month));
+
+		if (!check || dts->month <= 0 || dts->month >= 13)
+		{
+			printf("\nТакого месяца не существует! Введите еще раз:");
+			rewind(stdin);
+			continue;
+		}
+		else
+			break;
+	}
+	printf("\nВведите год:");
+	while (1)
+	{
+		check = scanf_s("%d", &(dts->year));
+		if (!check || dts->year <= 0)
+		{
+			printf("\nТакого года не существует! Введите еще раз:");
+			rewind(stdin);
+			continue;
+		}
+		else
+			break;
+	}
+
+}
+
+void input(FILE* binaryFile, int numberOfData)
+{
+	struct date* dts = malloc(sizeof(struct date) * numberOfData);
+	if (dts == NULL)
+	{
+		free(dts);
+		exit(-1);
+	}
+
+	int check;
+	for (int i = 0; i < numberOfData; i++)
+	{
+		inPutDate(&(dts[i]));
+		fwrite(&(dts[i]), sizeof(struct date), 1, binaryFile);
+	}
+	
+mark:
+	printf("Хотите ввести еще даты?\nЕсли да, то введите '1'\nЕсли нет, то введите любой другой символ:");
+
+	scanf("%d", &check);
+	if (check == 1)
+	{
+		printf("\nСколько еще вы хотите ввести дат?:");
+		scanf("%d", &check);
+		numberOfData += check;
+		dts = realloc(dts, sizeof(struct date) * numberOfData);
+		if (dts == NULL)
+		{
+			free(dts);
+			exit(-1);
+		}
+		for (int i = numberOfData - check; i < numberOfData; i++)
+		{
+			inPutDate(&(dts[i]));
+			fwrite(&(dts[i]), sizeof(struct date), 1, binaryFile);
+		}
+		goto mark;
+	}
+
+	free(dts);
+}
+
+
+void output(FILE* binaryFile)
+{
+
+	struct date* dts = malloc(sizeof(struct date) * 0);
+	rewind(binaryFile);
+	printf("\nОбновлённый список:\n");
+	int numberOfData = 0;
+	while (!feof(binaryFile))
+	{
+		struct date dt;
+		int a=ftell(binaryFile);//
+		fread(&dt, sizeof(struct date), 1, binaryFile);
+		a = ftell(binaryFile);//
+		if (feof(binaryFile))
+			break;
+		numberOfData++;
+		dts = realloc(dts, sizeof(struct date) * numberOfData);
+		if (dts == NULL)
+		{
+			free(dts);
+			exit(-1);
+		}
+
+		dts[numberOfData - 1] = dt;
+		outputDate(&dt);
+	}
+	int minYear = dts[0].year;
+	for (int i = 0; i < numberOfData; i++)
+	{
+		if (dts[i].year < minYear)
+			minYear = dts[i].year;
+	}
+	printf("\n\nМинимальный год: %d", minYear);
+	printf("\nВесенние даты:");
+
+	int areThereSpringDates = 0;
+	int maxDateIndex = 0;
+	int maxDate = dts[0].year * 365 + dts[0].month * 31 + dts[0].day;
+
+	for (int i = 0; i < numberOfData; i++)
+	{
+		if (dts[i].month >= 3 && dts[i].month <= 5)
+		{
+			outputDate(&(dts[i]));
+			areThereSpringDates = 1;
+		}
+			
+		if (dts[i].year * 365 + dts[i].month * 31 + dts[i].day > maxDate)
+		{
+			maxDate = dts[i].year * 365 + dts[i].month * 31 + dts[i].day;
+			maxDateIndex = i;
+		}
+			
+	}
+	if (!areThereSpringDates)
+		printf("Весенних дат нету!");
+
+	printf("\nСамая поздняя дата :");
+	outputDate(&(dts[maxDateIndex]));
+
+	free(dts);
+}
+
+void main()
+{
+	setlocale(LC_ALL, "RUS");
+
+	system("color F0");
+	FILE* binaryFile;
+
+	
+	int numberOfData;
+	printf("Введите число дат, которые вы хотите заполнить в файл:");
+
+	while (!scanf("%d", &numberOfData) || numberOfData < 0)
+	{
+		printf("\nНеверный ввод, попробуйте еще раз!: ");
+		rewind(stdin);
+	}
+
+	binaryFile = openFile("binaryFile", "wb");
+
+	input(binaryFile, numberOfData);
+	fclose(binaryFile);
+
+	binaryFile = openFile("binaryFile", "rb+");
+	output(binaryFile);
+	fclose(binaryFile);
+}
