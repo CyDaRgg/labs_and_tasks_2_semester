@@ -1,0 +1,682 @@
+//#include <stdio.h>
+//#include <locale.h>
+//#include <stdlib.h>
+//#include <string.h>
+//
+//
+//struct str
+//{
+//	char *p; /* 4 or 8 байт */
+//		char c; /* 1 байт */
+//		char pad[1]; /* 1 байт */
+//		int x;/* 2 байт */
+//
+//}bk1, bk2, *ptr_bk=&bk1;
+//
+//int main()
+//{
+//	printf("%d\n", sizeof(*ptr_bk));
+//	//printf("%d\n", sizeof(bk1.pole3));
+//	//printf("%d\n", sizeof(*ptr_bk));
+//
+//	return 0;
+//}
+
+
+
+
+
+
+
+//#include <stdio.h>
+//#include <locale.h>
+//#include <stdlib.h>
+//#include <string.h>
+//
+//
+//struct book
+//{
+//	char author[30];
+//	int age;
+//
+//
+//}st2, st1, x;
+//
+//
+//int main()
+//{
+//	gets_s (st1.author,3);
+//
+//	st1.age = 10;
+//
+//	st2 = st1;
+//
+//	printf("%d", st2.age);
+//
+//	
+//	//system("pause");
+//
+//	return 0;
+//}
+
+
+
+
+
+
+//#include <stdio.h>
+//#include <locale.h>
+//#include <stdlib.h>
+//#include <string.h>
+//
+//struct name
+//{
+//	char fio[30];
+//};
+//
+//struct inform
+//{
+//	struct name nm;
+//	char prof[30];
+//	int god;
+//	float okl;
+//
+//};
+//
+//int main()
+//{
+//
+//	setlocale(LC_ALL, "RUS");
+//	struct inform mas[2] = { "ivan","konstr",1965,15000.50,"petr","operator",1967,12350.50 };
+//
+//	struct inform *him;
+//
+//	printf("adress mas[0]:%u mas[1]:%u\n", &mas[0], &mas[1]);
+//
+//	him = mas;
+//
+//	printf("adress mas[0]:%u mas[1]:%u\n", him, him+1);
+//
+//
+//	printf("him->okl=%.2f (*him).okl=%.2f\n", him->okl, (*him).okl);
+//
+//	him++;
+//
+//	printf("him->okl=%.2f (*him).okl=%.2f\n", him->okl, (*him).okl);
+//
+//	++him->okl;  // смотри приоритет, увеличение на 1 оклада;
+//
+//	printf("him->okl=%.2f (*him).okl=%.2f\n", him->okl, (*him).okl);
+//
+//
+//
+//	
+//
+//
+//	return 0;
+//}
+
+
+
+
+//#include <stdio.h>
+//#include <locale.h>
+//#include <stdlib.h>
+//#include <string.h>
+//
+//
+//float summa(float, float *);
+//
+//struct str
+//{
+//	char prof[5][7]; // профессия
+//	float okl[5];
+//	float sm; // оклад и сумма
+//} ok = { "проф1","проф2","3","4","", 1.5,2.06,31.4,3.0,0,0 };
+//
+//int main()
+//{
+//	setlocale(LC_ALL ,"RUS");
+//	float max;
+//	int i;
+//
+//	for (i = 0; i < 6; i++)
+//		max = summa(ok.okl[i], &ok.sm);
+//
+//	printf("max значение =%5.2f\n сумма = %5.2f", max, ok.sm);
+//
+//	printf("\n%s", ok.prof[0]);
+//	return 0;
+//	
+//}
+//float summa(float i, float *j)
+//{
+//	static float max = 0;
+//	*j += i; // вычисление суммы
+//	max = (max > i) ? max : i; // поиск max значения
+//	return max;
+//}
+
+
+//#include <stdio.h>
+//#include <locale.h>
+//#include <stdlib.h>
+//#include <string.h>
+//
+//float sr_ball(struct str); // прототип функции, принимающей структуру
+//
+//struct str // объявление структуры
+//{
+//	char prof[15];
+//	int oc[4];
+//};
+//int main()
+//{
+//	setlocale(LC_ALL, "RUS");
+//	float bl;
+//	struct str s = { "Иванов",5,4,3,5 }; // инициализация структурной переменной s
+//	bl = sr_ball(s); // передача структурной переменной s в функцию sr_ball
+//	printf("среднийбалл =%5.2f", bl);
+//	return 0;
+//}
+//float sr_ball(struct str st) // описание функции sr_ball, принимающей
+//{ // структурную переменную
+//	return ((float)(st.oc[0] + st.oc[1] + st.oc[2] + st.oc[3]) / 4);
+//}
+
+
+
+
+
+
+/*Пример 1 Среди абитуриентов, сдавших вступительные экзамены в институт, определить количество абитуриентов, проживающих в городе Минске и
+сдавших экзамены со средним баллом не ниже восьми, распечатать их фамилии
+в алфавитном порядке.*/
+
+
+
+//#include <stdio.h>
+//#include <locale.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <Windows.h>
+//
+//#define NUMBER_OF_STUDENTS 3
+//#define MAX_SIZE 256
+//#define NUMBER_OF_EXAMS 3
+
+//wchar_t* getstr(wchar_t *st, int n)           // системная функция           char* gets  (char* buffer);  при \n перестает ввод и заменяет его на '\0'      для char mas[5];  
+//{                                       // системная функция           int puts(const char* string);   выводит строку
+//	setlocale(LC_ALL, "RUS");
+//	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+//	SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+//	int i = 0;
+//	char symbol;
+//
+//	while (i < n)
+//
+//	{
+//
+//		rewind(stdin);
+//		//symbol = (char)getchar();
+//		scanf_s("%c", &symbol);
+//
+//		if (symbol == '\n')
+//		{
+//			break;
+//		}
+//
+//
+//		*(st + i) = symbol;
+//
+//		i++;
+//
+//
+//	}
+//
+//	st[i] = '\0';
+//
+//	return st;
+//}
+//
+//int str_cmp(wchar_t *st1, const char *st2)
+//{
+//	while (*st1)     // истина пока не достигнут конец ('\0') строки s1
+//	{
+//		if (*st1 - *st2)
+//			return *st1 - *st2;  // >0 если ASCII-код  *s1 > *s2
+//											  // иначе <0
+//		else                                  // при совпадении символов переход
+//		{
+//			st1++;                            // к анализу следующей пары символов
+//			st2++;
+//		}
+//
+//	}
+//	return *st1 - *st2;  // строки либо полностью совпали либо одна окончилась
+//}
+
+
+
+//struct student
+//{
+//	char *town;
+//	char surname[MAX_SIZE];
+//	char mark[NUMBER_OF_EXAMS];
+//};
+//
+//
+//
+//int main()
+//{
+//	setlocale(LC_ALL, "RUS");
+//	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+//	SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+//	                                                                                        
+//	/* Объявление переменных для преобразования русских символов в
+// строке в другую кодировку для корректных операций со строками */
+//	int i;
+//	int j;
+//	int finalNumberOfStudents=0;
+//	char c;
+//	float midball=0;
+//////////////////////////////////////////////
+//
+//	struct student *person;
+//	person = (struct student*)malloc(NUMBER_OF_STUDENTS * sizeof(struct student));
+//
+//
+//	setlocale(LC_ALL, "RUS");
+//
+//	printf("Введите информацию об абитуриентах\n");
+//
+//
+//	for (i = 0; i < NUMBER_OF_STUDENTS; i++)
+//	{
+//	   printf("\nВведите фамилию %d-го абитуриента :", i+1);
+//	   rewind(stdin);
+//
+//	  gets_s(person[i].surname);
+//	  //getstr(person[i].surname, 30);
+//	   if (!person[i].surname)
+//	   {
+//		   break;
+//	   }
+//
+//	   printf("\nВведите город абитуриента :");
+//
+//	   person[i].town = (char*)malloc(MAX_SIZE * sizeof(char));
+//
+//	   rewind(stdin);
+//
+//	   gets_s(person[i].town,MAX_SIZE);
+//	   //getstr(person[i].town, 30);
+//	   if (!person[i].town)
+//	   {
+//		   break;
+//	   }
+//
+//	   printf("\nВведите оценки (физика, математика, русский язык) :");
+//
+//	   for (j = 0; j < NUMBER_OF_EXAMS; j++)
+//	   {
+//		   rewind(stdin);
+//		   scanf_s("%d", &person[i].mark[j]);
+//	   }
+//	}
+//
+//	
+//	
+//
+//	/* Цикл, проходящий по каждой букве алфавита, для упорядочивания
+// фамилий в алфавитном порядке */
+//	for (c = 'А'; c <= 'Я'; c++)
+//		
+//		{
+//			for (i = 0; i < NUMBER_OF_STUDENTS; i++)
+//			{
+//				if ( !strcmp(person[i].town, "Минск") && person[i].surname[0] == c)
+//					
+//				{
+//					for (int k = 0; k < NUMBER_OF_EXAMS; k++)
+//					{
+//						midball = midball + person[i].mark[k];
+//					}
+//						midball =(float)( midball / NUMBER_OF_EXAMS);
+//						if (midball >= 8)
+//						{
+//							printf("%s\n", person[i].surname);
+//							midball = 0;
+//						}
+//				}
+//			}
+//		}
+//
+//	return 0;
+//}
+
+
+
+
+/*Пример 2. Кадровые данные сотрудников(фамилия и инициалы, год
+	рождения, должность и оклад) ведутся с помощью структур, причём фамилия и
+	инициалы находятся во вложенной структуре.Требуется:
+− вывести адреса записей структур двумя способами, учитывая, что
+переменная типа «структура» определена как указатель;
+− перейти ко второй записи структуры, увеличить значение зарплаты на
+единицу и вывести двумя способами;
+− вернуться к первой записи структуры, вывести фамилию двумя
+способами.*/
+
+
+
+//#include <stdio.h>
+//#include <locale.h>
+//#include <stdlib.h>
+//#include <string.h>
+//
+//#define MAX_SIZE 30 // max число символов в строке char
+//
+//
+//struct Worker
+//{
+//	char surname[MAX_SIZE];
+//	char name;
+//	char patronymic;
+//};
+//
+//struct inform
+//{
+//	Worker person;
+//	char profession[MAX_SIZE];
+//	int yearOfBirth;
+//	float salary;
+//}*him;
+//
+//
+//int main()
+//{
+//	setlocale(LC_ALL, "RUS");
+//
+//	struct inform mas[2] = { "Иванов", 'И', 'И', "конструктор", 1989, 15000.50,
+//						   "Петров", 'П', 'П', "оператор", 1987, 12350.50 };
+//
+//
+//	//struct inform *him;
+//	//1)
+//	printf("адрес mas[0]: %u mas[1]: %u \n", &mas[0], &mas[1]);
+//
+//	him = mas;
+//
+//	printf("адрес mas[0]: %u mas[1]: %u \n", him, him + 1);
+//	//2)
+//
+//	printf("him->salary = %.2f (*him).salary = %.2f \n", him->salary, (*him).salary);
+//	him++; // him присваивается адрес следующего элемента структуры
+//	him->salary++; // значение переменной salary увеличивается на единицу
+//	printf("him->salary = %.2f (*him).salary = %.2f \n", him->salary, (*him).salary);
+//	//3)
+//	him--; // в этом случае выполняется переход к mas[0]
+//	printf("him->FIO.surname = %.20s (*him).FIO.surname = %.20s \n",
+//		him->person.surname, (*him).person.surname); // затем вывод
+//	return 0;
+//}
+
+
+                                      //Луцик//
+
+//#include <stdio.h>
+//#include <locale.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <Windows.h>
+//
+//#define DL 30        // max число символов в строке
+//struct name
+//{
+//	char fm[DL];     // фамилия
+//	char im;         // имя
+//	char ot;         // отчество
+//};
+//struct inform {
+//	struct name nm;          // сылка на стр-ру name
+//	char prof[DL];    // профессия
+//	int god;          // год рождения
+//	float okl;        // оклад
+//};
+//// инициализация вложенных структур (массива структур)
+//int main()
+//{
+//	setlocale(LC_ALL, "Russian");
+//
+//	struct inform rb = { "Сидоров", 'С', 'С', "профессия", 1995, 567.89 };
+//	//inform rb = { "Сидоров", 'С', 'С', "профессия", 1995};
+//	// и массива структур mas
+//	struct inform mas[5] = { "Иванов", 'И', 'И', "профессия 1", 1990, 500.50,
+//					   "Петров", 'П', 'П', "профессия 2", 2000, 600.0
+//	};
+//	//inform mas[5] = { { "Иванов", 'И', 'И', "профессия 1", 1990, 500.50 },
+//	//                  { "Петров", 'П', 'П', "профессия 2", 2000, 600.67 }
+//	//                };
+//	//inform mas[5] = { { "Иванов", 'И', 'И', "профессия 1", 1990 },
+//	//                  { "Петров", 'П', 'П', "профессия 2", 2000 }
+//	//                };
+//	//inform mas[5] = { { "Иванов", 'И', 'И', "профессия 1", 1990, 500.50 }, 
+//	//                  {},
+//	//                  { "Петров", 'П', 'П', "профессия 2", 2000, 600.67 }
+//	//                };
+//	printf("\nинформация 1 :");
+//	printf("\nФИО : %-10s%2c%2c", rb.nm.fm, rb.nm.im, rb.nm.ot);
+//	printf("%15s%5d%10.2f", rb.prof, rb.god, rb.okl);
+//	printf("\nинформация 2 :");
+//	for (int i = 0; i < 5; i++)
+//	{
+//		printf("\nФИО : %-10s%2c%2c", mas[i].nm.fm, mas[i].nm.im, mas[i].nm.ot);
+//		printf("%15s%5d%10.2f", mas[i].prof, mas[i].god, mas[i].okl);
+//	}
+//	puts("\n");
+//	return 0;
+//}
+
+//--------------------------------------------------------------------------------
+
+// демонстрация вложенных структур
+//#include <stdio.h>
+//#include <locale.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <Windows.h>
+//
+//#define DL 30        // max число символов в строке
+//struct name
+//{
+//	char fm[DL];     // фамилия
+//	char im;         // имя
+//	char ot;         // отчество
+//};
+//struct inform {
+//	struct name nm;          // сылка на стр-ру name
+//	char prof[DL];    // профессия
+//	int god;          // год рождения
+//	float okl;        // оклад
+//};
+//
+//int main()
+//{
+//	setlocale(LC_ALL, "russian");
+//	struct inform mas[4] = {"Иванов",'И','И',"конструктор",1989,15000.50,
+//	                 "Петров", 'П', 'П', "оператор", 1987, 12350.50 };
+//	struct inform *him;         // указатель на структуру  inform
+//
+//	printf("размер структуры inform: %X \n", sizeof(inform));
+//	printf("1 адрес mas[0]: %u   mas[1]: %u \n", &mas[0], &mas[1]);
+//	printf("2 адрес mas[0]: %X   mas[1]: %X \n", &mas[0], &mas[1]);
+//	him = mas;        //him содержит адрес   mas[0]
+//	printf("3 адрес   him : %X    him+1: %X \n", him, him+1);
+//	printf("4 адрес mas[0]: %x   mas[1]: %x \n\n",him,him+1);
+//
+//	printf("him->okl = %.2f   (*him).okl = %.2f \n",him->okl,(*him).okl);
+//	//  him++;          //him содержит адрес следующей стр-ры   mas[1]
+//	(++him)->okl++;     // him->okl==12351.5
+//	printf("him->okl = %.2f   (*him).okl = %.2f \n",him->okl,(*him).okl);
+//	// him--;
+//	printf("him->nm.fm = %.20s   (*him).nm.fm = %.20s \n", (him)->nm.fm, (*--him).nm.fm);
+//					// в этом случае выполняется переход к mas[0]-----------┘
+//					// затем вывод -------------------------------┘
+//	return 0;
+//}
+
+
+
+
+//#include <stdio.h>
+//#include <conio.h>
+//#include <locale.h>
+//#include <iostream>
+//// Нахождение площади прямоугольной фигуры по 2 коррдинатам
+//// (x1,y1) и (x2,y2).
+//
+//struct rect analiz(struct rect); // здесь наличие слова struct обязательно
+//void swap(int n, struct rect *);
+//
+//struct point 
+//{
+//	int x;             // структура point описывает координаты
+//	int y;             // (x  и  y) точки на плоскости
+//};
+//struct rect 
+//{
+//	point p1;    // структура rect описывает координаты
+//	point p2;    // 2 угловых точек (прямоуг-ка, квадрата)
+//};
+//int main()
+//{
+//	setlocale(LC_ALL, "Russian");
+//	struct rect pt;
+//	int s;
+//	do
+//	{
+//		system("cls");
+//		puts("введите координаты левого нижнего угла фигуры");
+//		scanf_s("%d%d", &pt.p1.x, &pt.p1.y);
+//		puts("введите координаты правого верхнего угла фигуры");
+//		scanf_s("%d%d", &pt.p2.x, &pt.p2.y);
+//		pt = analiz(pt);       // анализ и коррекция координат угловых точек
+//	} while (pt.p1.x > pt.p2.x && pt.p1.y > pt.p2.y);
+//	s = (pt.p2.x - pt.p1.x)*(pt.p2.y - pt.p1.y);   // вычисление площади фигуры
+//	printf("площадь фигуры S= %d", s);
+//	//getch();
+//	return 0;
+//}
+//struct rect analiz(struct rect ptt)
+//{
+//	void(*f)(int, rect *);        // указатель на функцию   swap
+//	f = swap;
+//
+//	struct rect *ptr;
+//	ptr = &ptt;                            // ptr содержит адрес стр-ры ptt
+//	if (ptt.p1.x > ptt.p2.x) swap(1, ptr);  // x1>x2 выполняем в (*f)  x1<->x2
+//	if ((*ptr).p1.y > ptt.p2.y) (*f)(2, ptr);  // y1>y2 выполняем в (*f)  y1<->y2
+//	return ptt;
+//}
+//void swap(int n, rect *ptr)  // замена одноименных координат 2 точек
+//{
+//	int i;                    // из функции не требуется возврата т.к.
+//	switch (n)                // замена выполняется по адресу стр-ры ptt
+//	{
+//	case 1: i = ptr->p1.x; ptr->p1.x = ptr->p2.x; ptr->p2.x = i; break;
+//	case 2: i = ptr->p1.y; ptr->p1.y = ptr->p2.y; ptr->p2.y = i; break;
+//	}
+//}
+
+
+// в проекте используется массив структур для демонстрации 
+// создания и работы с библиотечным каталогом
+
+//#include <stdio.h>
+//#include <string.h>
+//#include <stdlib.h>
+//#include <locale.h>
+//
+//
+//#define fam 30    // max число символов в фамилии
+//#define zag 50    // max число символов в названии книги
+//#define kol 2    // max число наименований книг в каталоге
+//
+//void mas_str(struct book*, struct book**);
+//
+//  struct book 
+//  {
+//	char avt[fam];
+//	char naz[zag];
+//	int str;
+//	int izd;
+//};
+//
+//// вариант 1 - используя статические массивы данных
+//void mas_str(book, book*);
+//
+//
+//int main()
+//{
+//	setlocale(LC_ALL, "Russian");
+//	struct book bk = {};
+//	struct book lib[kol] = { "","",0,0 };
+//
+//
+//	int i;
+//
+//	do              // цикл до тех пор пока выражение истинно
+//	{
+//		rewind(stdin);
+//		printf("\nВведите фамилию автора: ");
+//		gets_s(bk.avt);
+//		if (strcmp(bk.avt, ""))       //если не пустой ввод
+//		{
+//			printf("\nВведите наименование книги: ");
+//			gets_s(bk.naz);
+//			printf("\nВведите год издания и число страниц: ");
+//			scanf_s("%d%d", &bk.izd, &bk.str);
+//			mas_str(bk, lib); //сохранение структуры в массив lib[]
+//		}
+//		//else break;
+//	} while (strcmp(bk.avt, ""));                                          //если есть ввод новых авторов, то продолжаем
+//
+//	for (i = 0; lib[i].avt[0]; i++)
+//		printf("\n%s    %s", lib[i].avt, lib[i].naz);
+//
+//	printf("\n");
+//	return 0;
+//}
+//
+//void mas_str(book bk, book lib[])   // вводит информацию в очередную структуру
+//{
+//	static int num;                 // счетчик числа введенных структур - 1
+//	int k = 0, i;
+//
+//
+//	while (strcmp(lib[k].avt, "") && strcmp(lib[k].avt, bk.avt))          //1) пока не пробел и 2)не равны
+//		k++;     
+//
+//
+//	if (!strcmp(lib[k].avt, bk.avt))   //если авторы совпали
+//	{
+//
+//		while (!strcmp(lib[k].avt, bk.avt))                              //Если авторы совпали
+//			k++;    // поиск далее номера стуктуры с другим автором
+//
+//
+//		i = num;    // -1 т.к. индексация начинается с 0
+//
+//
+//		while (i > k)  // сдвиг элементов с номера k ...
+//		{
+//			lib[i] = lib[i - 1];
+//			i--;
+//		};
+//	}
+//
+//
+//	lib[k] = bk;
+//	num++;
+//}
