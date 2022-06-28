@@ -1,0 +1,86 @@
+#define _CRT_SECURE_NO_WARNINGS
+// примеры некоторых стандартных функций для работы со строками
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <windows.h>
+#include <string.h>
+#include <math.h>
+
+
+float DerivativeOfTheFunction(float x, float dx, float(*f)(float x))
+{
+
+	return   (f(x + dx) - f(x)) / dx;
+
+}
+
+float Function(float x)
+{
+
+	//return cos(x);
+//	float x, Eps;
+	int	n;
+	float Sum, Element, Eps;
+
+	//printf("Enter x = ");
+	//scanf_s("%f", &x);
+
+	rewind(stdin);
+
+	printf("And Eps = ");
+	scanf_s("%f", &Eps);
+
+
+	Element = 1;
+	Sum = 1;          // первый член Тейлора
+
+	n = 1;            // степень
+
+	do
+	{
+		(float)Element = (float)(-Element * x * x / ((2 * n)*(2 * n - 1)));
+		n++;
+		Sum = Sum + Element;
+	} while (fabs(Element) > Eps);
+
+	return Sum;
+}
+
+                           //Производная функции//
+
+int main()
+{
+	float x0;
+	float dx;
+	float value;
+
+	setlocale(LC_ALL, "RUS");
+
+	float(*functionPointer)(float x);
+
+
+	functionPointer = Function;
+
+
+	printf("Input x0\n");
+	scanf_s("%f", &x0);
+
+	printf("Input dx\n");
+	scanf_s("%f", &dx);
+
+
+
+	value = DerivativeOfTheFunction(x0, dx, functionPointer);
+
+
+
+	printf(" Derivative Of The Function=%f\n", value);
+
+	//printf("Input dx%lf\n", sin(3.14159265358979323846 / 6));
+
+	system("pause");
+	return 0;
+
+}
