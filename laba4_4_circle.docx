@@ -1,0 +1,564 @@
+//4.4 Создать однонаправленное(двунаправленное) кольцо, элементами 
+//которого является структура, содержащая информацию об учащемся:
+// фамилия, номер группы, указатель на стек оценок, полученных за сессию.
+//Для кольца предусмотреть возможность его 
+//1)дополнения, 2)сортировки(по фамилии, по номеру группы), 
+//3)удаления информации(по учащимся, получившим три и более неудовлетворительные оценки), 
+//4)поиска и редактирования информации в кольце.
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <conio.h>
+#include <locale.h>
+#include <Windows.h>
+
+struct grades
+{
+	int grade;
+	struct grades* next;
+};
+struct personalStudentInformation
+{
+	char secondName[30];
+	int groupNumber;
+	struct grades* gradesOfStudent;
+};
+struct nodeOfCircle2
+{
+	struct personalStudentInformation* personalInformation;
+	struct nodeOfCircle2* rightNode;
+	struct nodeOfCircle2* leftNode;
+};
+
+void creationOrAddingNode(struct nodeOfCircle2 **headOfCircle);
+void fillingInInformation(struct nodeOfCircle2* node);
+void push(struct grades **headOfSteck);
+
+void showInformation(struct nodeOfCircle2 *head);
+void showDirection(struct nodeOfCircle2 *head, char direction);
+
+void sortingPointers(struct nodeOfCircle2 **head);
+void sortingContent(struct nodeOfCircle2 **head);
+
+void delNodes(struct nodeOfCircle2 **head);
+int numberOfUnsatisfactoryGrades(struct grades*headOfSteck);
+
+void lookingForNecessaryInformation(struct nodeOfCircle2 **head);
+void newSecondNameStudent(char* OldSecondName);
+void newGroupNumber(int* OldGroupNumber);
+void deleteOfGrade(struct grades **headSteck);
+void delStudent(struct nodeOfCircle2 **student, struct nodeOfCircle2 **headCircle);
+
+void cleanDataOfStudents(struct nodeOfCircle2 **headOfCircle);
+void cleanDataOfGrades(struct grades** headSteck);
+
+int directionOfSort(char direction, int theBest, int run);
+struct nodeOfCircle2 *napr(char direction, struct nodeOfCircle2 *run);
+void CorrectInput(int* Information);
+
+void main()
+{
+	system("color F0");
+	setlocale(LC_ALL, "Russian");
+	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+	SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+	char Operation;
+	struct nodeOfCircle2* head= NULL;
+	while (1)
+	{
+		printf("\nВыберите операцию, которую Вы хотите выполнить:");
+		puts("\nВид операции: 1-Создать кольцо или дополнить его");
+		puts("                2-Вывод содержимого кольца");
+		puts("                3-Удаление информации(студентов, получивших три и более неудовлетворительных оценок)");
+		puts("                4-Сортировка по фамилиям студентов  (изменяя указатели на элементы)");
+		puts("                5-Сортировка по номерам группы студентов (изменяя содержимое элементов)");
+		puts("                6-Поиск студентов и редактирование их информации");
+		puts("                0-Выход");
+		rewind(stdin);
+		Operation = getchar();
+		switch (Operation)
+		{
+		    start:
+		case '1': creationOrAddingNode(&head); break;
+		case '2': showInformation(head); break;
+		case '3': delNodes(&head); break;
+		case '4': sortingPointers(&head); break;
+		case '5': sortingContent(&head); break;
+		case '6': lookingForNecessaryInformation(&head); break;
+		case '0': cleanDataOfStudents(&head); return;
+		default:printf("\nНеверная операция, попробуйте еще раз"); goto start;
+		}
+	}
+}
+void creationOrAddingNode (struct nodeOfCircle2 **headOfCircle)
+{
+	int amountOfStudents;
+	int count = 1;
+	printf("\nСколько новых студентов вы хотите заполнить?: ");
+	CorrectInput(&amountOfStudents);
+	struct nodeOfCircle2 *behindTheNewNode, *NewNode;
+	if (!(*headOfCircle))               
+	{
+		if (!(NewNode = (struct nodeOfCircle2 *)malloc(sizeof(struct nodeOfCircle2))))
+		{                    
+			puts("\nНет свободной памяти");
+			return;
+		}
+		printf("\nВведите информацию о %d студенте ", count++);
+		fillingInInformation(NewNode);
+
+		NewNode->leftNode = NewNode->rightNode = NewNode;
+		(*headOfCircle) = NewNode;             
+
+		amountOfStudents--;
+	}
+
+	else NewNode = (*headOfCircle)->rightNode;       
+
+	while (amountOfStudents != 0)
+    {
+		if (!(behindTheNewNode = (struct nodeOfCircle2 *)malloc(sizeof(struct nodeOfCircle2))))
+		{                    
+			puts("\nНет свободной памяти");
+			return;
+		}
+		printf("\nВведите информацию о %d студенте", count++);
+		fillingInInformation(behindTheNewNode);
+		
+		NewNode->leftNode = behindTheNewNode;          
+		behindTheNewNode->rightNode = NewNode;         
+							 
+		NewNode = behindTheNewNode;            
+		
+		amountOfStudents--;
+	} 
+		NewNode->leftNode = *headOfCircle;
+		(*headOfCircle)->rightNode = NewNode;
+}
+void fillingInInformation(struct nodeOfCircle2* node)
+{
+	node->personalInformation = (struct personalStudentInformation*)calloc(1,sizeof(struct personalStudentInformation));
+	printf("\nЗаполните фамилию студента: ");
+	int correct;
+	int flag = 0;
+	rewind(stdin);
+	gets(node->personalInformation->secondName);
+	printf("\nЗаполните номер группы студента: ");
+	CorrectInput(&(node->personalInformation->groupNumber));
+	printf("\nЗаполните оценки студента: ");
+	push(&(node->personalInformation->gradesOfStudent));
+}
+void push(struct grades **headOfSteck)
+{
+	struct grades *newGrade;
+	newGrade = *headOfSteck;
+	int amountOfGrades;
+	int count=1;
+	printf("\nСколько оценок вы хотите ввести?:");
+	CorrectInput(&amountOfGrades);
+	do
+	{
+		if (!((*headOfSteck) = (struct grades *)calloc(1, sizeof(struct grades))))  
+		{
+			puts("Нет свободной памяти");
+			return;
+		}
+		printf("\nВведите %d оценку:",count++ );
+		CorrectInput(&((*headOfSteck)->grade));
+		(*headOfSteck)->next = newGrade;              
+		newGrade = *headOfSteck;                  
+		amountOfGrades--;
+	} while (amountOfGrades!=0);
+}
+void showInformation(struct nodeOfCircle2 *head)
+{
+	char direction;
+	printf("\nВыберите направление показа: ");
+	printf(" r - по часовой, l - против часовой: ");
+	start:
+	rewind(stdin);
+	switch (direction = getchar())
+	{
+	
+	case 'r': case 'R': showDirection(head, direction); break;
+	case 'l': case 'L': showDirection(head, direction); break;
+	default:printf("\nНеверная операция, попробуйте еще раз");
+		goto start;
+	}
+}
+void showDirection(struct nodeOfCircle2 *head, char direction)
+	{
+		if (!head)
+		{
+			puts("\nСначала введите информацию о студентах");
+			return;
+		}
+		struct nodeOfCircle2 *run;
+		struct grades* runGrades;
+		run = head;
+		do
+		{
+			int count = 1;
+			printf("\nИнформация о %d студенте :", count++);
+			printf("\nФамилия: %s", run->personalInformation->secondName); 
+			printf("\nНомер группы: %d", run->personalInformation->groupNumber);
+			printf("\nОценки:\t ");
+			runGrades = run->personalInformation->gradesOfStudent;
+			do
+			{
+				if (!runGrades)
+				{
+					printf("У студента нет оценок");
+					break;
+				}
+				printf("%d", runGrades->grade);  
+				printf(";");
+				runGrades = runGrades->next;    
+			} while (runGrades!=NULL);
+			run = napr(direction, run);       
+		} while (run != head);             
+		puts("\nВывод информации о студенте окончен");
+	}
+void sortingPointers(struct nodeOfCircle2 **head)
+{
+	if (!(*head))
+	{
+		printf("\nСписок студентов пуск, перед сортировкой по фамилиям заполните его");
+		return;
+	}
+	struct nodeOfCircle2 *checking, *run, *theBest;
+	checking = (*head);                                
+	do
+	{
+		run = checking->rightNode;                          
+		theBest = checking;                            
+		do
+		{
+			if (strcmp(theBest->personalInformation->secondName, run->personalInformation->secondName) > 0)  
+				theBest = run;                    
+			run = run->rightNode;                      
+		} while (run != (*head));                  
+
+		if (theBest != checking)                        
+		{                                  
+			if ((*head) == checking) (*head) = theBest;  
+			theBest->leftNode->rightNode = theBest->rightNode;      
+			theBest->rightNode->leftNode = theBest->leftNode;     
+
+			checking->leftNode->rightNode = theBest;        
+			theBest->rightNode = checking;           
+			theBest->leftNode = checking->leftNode;      
+			checking->leftNode = theBest;          
+		}
+		else
+			checking = checking->rightNode;
+	} while (checking->rightNode != (*head));
+}
+void sortingContent(struct nodeOfCircle2 **head)
+{
+	if (!(*head))
+	{
+		printf("\nСписок студентов пуск, перед сортировкой по номерам групп заполните его");
+		return;
+	}
+	struct nodeOfCircle2 *checking, *run;
+	char direction;
+	char directionSort;
+	int theBest;
+	do
+	{
+		printf("\nсортировка r - по часовой, l - против часовой");
+		rewind(stdin);
+		direction = getchar();
+	} while (direction != 'r' && direction != 'l');
+	do
+	{
+		printf("\nЕсли хотите сортировку по возрастанию введите 'h',");
+		printf("\nЕсли хотите сортировку по убыванию введите 'l'\n");
+		rewind(stdin);
+		directionSort = getchar();
+	} while (directionSort != 'h' && directionSort != 'l');
+	checking = (*head);                          
+	do
+	{
+	    theBest = checking->personalInformation->groupNumber;           
+		run = checking;                      
+		do
+		{
+			run = napr(direction, run);       
+			if (directionOfSort(directionSort, theBest, run->personalInformation->groupNumber)) 
+			{  
+			checking->personalInformation->groupNumber= run->personalInformation->groupNumber; 
+			run->personalInformation->groupNumber= theBest;
+			theBest= checking->personalInformation->groupNumber;
+			}
+		} while (napr(direction, run) != (*head));   
+		checking = napr(direction, checking);             
+	} while (napr(direction, checking) != (*head));      
+}
+void delNodes(struct nodeOfCircle2 **head)
+{
+	struct nodeOfCircle2 *run;                      
+	struct nodeOfCircle2 *deleteNode;
+	if (!(*head))
+	{
+		printf("\nСписок студентов пуск, перед удалением информации заполните его"); 
+		return;
+	}
+	run = (*head);
+	do                             
+	{
+		if (numberOfUnsatisfactoryGrades(run->personalInformation->gradesOfStudent) < 3)
+			run = run->rightNode;
+		else
+		{
+			deleteNode = run;
+			run = run->rightNode;
+			delStudent(&(deleteNode), head);
+		
+		}
+	} while ((*head) && run != (*head));              
+	if (numberOfUnsatisfactoryGrades(run->personalInformation->gradesOfStudent) < 3)
+		return;
+	else delStudent(&(run), head);
+	printf("\nСтуденты, получившие три и более неудовлетворительные оценки, были удалены из списка");
+}
+int numberOfUnsatisfactoryGrades(struct grades*headOfSteck)
+{
+	struct grades *run;
+	run = headOfSteck;
+	int count = 0;
+	if (!headOfSteck)
+	{
+		printf("\nОценок нет");
+		return 0;
+	}
+	while (run != NULL)
+	{
+		if ((run->grade) < 4)
+			count++;
+		run=run->next;
+	}
+	return count;
+}
+void lookingForNecessaryInformation (struct nodeOfCircle2 **head)
+{
+	if (!head)
+	{
+		puts("\nСписок пуст, заполните студентов ");
+		return;
+	}
+	struct nodeOfCircle2 *run;
+	struct grades* runGrades;
+	run = (*head);
+	char secondName[30];
+	int groupNumber;
+	printf("\nВведите Фамилию студента, информацию которого хотите изменить");
+	rewind(stdin);
+	gets(secondName);
+	printf("\nВведите номер группы студента, информацию которого хотите изменить");
+	CorrectInput(&groupNumber);
+	do
+	{
+		if (!strcmp(run->personalInformation->secondName, secondName))
+			if (run->personalInformation->groupNumber == groupNumber)
+			{
+				while (1)
+				{
+					printf("\nКакую информацию о студенте вы хотите изменить?");
+					printf("\nЕсли фамилию, то введите 1");
+					printf("\nЕсли номер группы, то введите 2");
+					printf("\nЕсли хотите добавить оценки, то 3");
+					printf("\nЕсли хотите удалить какую-либо оценку, то 4");
+					printf("\nЕсли хотите удалить этого студента, то 5");
+					printf("\nВыход 0\n");
+					char choice;
+					rewind(stdin);
+					choice = getchar();
+					switch (choice)
+					{
+					start:
+					case '1': newSecondNameStudent(run->personalInformation->secondName); break;
+					case '2': newGroupNumber(&(run->personalInformation->groupNumber)); break;					
+					case '3': push(&(run->personalInformation->gradesOfStudent)); break;
+					case '4': deleteOfGrade(&(run->personalInformation->gradesOfStudent)); break;					
+					case '5':  delStudent(&(run), head);  return;
+					case '0': return 0;
+					default:printf("\nНеверная операция, попробуйте еще раз");
+						goto start;
+					}
+				}
+				return;
+			}
+		run=run->rightNode;
+	} while (run !=(*head));
+	puts("\nТакого студента нету");
+}
+void newSecondNameStudent(char* OldSecondName)
+{
+	printf("\nВведите новую фамилию: ");
+	char newSecondName[30];
+	rewind(stdin);
+	gets(newSecondName);
+	strcpy(OldSecondName, newSecondName);
+}
+void newGroupNumber(int* OldGroupNumber)
+{
+	printf("\nВведите новый номер группы: ");
+	int newGroupNumber;
+	CorrectInput(&newGroupNumber);
+	(*OldGroupNumber) = newGroupNumber;
+}
+void deleteOfGrade(struct grades **headSteck)
+{
+	if (!(*headSteck))
+	{
+		printf("\nОценок у студента нету");
+		return;
+	}
+	printf("\nКакую оценку вы хотите удалить?");
+	int checkingGrade;
+	CorrectInput(&checkingGrade);
+	int flagFree = 1;
+	struct grades* runSteck;
+	struct grades* deleteNode;
+	struct grades* deleteMemory;
+	runSteck = (struct grades*)malloc(sizeof(struct grades));
+	deleteMemory = runSteck;
+	runSteck->next = (*headSteck);
+	while (runSteck->next)
+	{
+		if (runSteck->next->grade == checkingGrade)
+		{
+			if ((runSteck->next) == (*headSteck))
+			{
+				*headSteck = (*headSteck)->next;
+
+				free(runSteck->next);
+				free(deleteMemory);
+				return;
+			}
+			deleteNode = runSteck->next;
+			runSteck->next = deleteNode->next;
+			free(deleteNode);
+			free(deleteMemory);		
+			return;
+		}
+		runSteck = runSteck->next;
+	}
+	printf("\nНужная оценка не найдена");
+}
+void delStudent(struct nodeOfCircle2 **student, struct nodeOfCircle2 **headCircle)
+{
+	if ((*student)->rightNode == (*student))      
+	{
+		cleanDataOfGrades(&((*headCircle)->personalInformation->gradesOfStudent));
+		free((*headCircle));
+		(*headCircle) = NULL;
+		return;
+	}
+	else
+	{
+		if ((*student) == (*headCircle))
+		{
+			(*headCircle) = (*headCircle)->leftNode;
+		}
+		(*student)->leftNode->rightNode = (*student)->rightNode;   
+		(*student)->rightNode->leftNode = (*student)->leftNode;
+		cleanDataOfGrades(&((*student)->personalInformation->gradesOfStudent));
+		free((*student));        	          
+	}
+}
+struct nodeOfCircle2 *napr(char direction, struct nodeOfCircle2 *run)
+{
+	switch (direction)
+	{
+		start:
+	case 'r': case 'R': return run->rightNode;   // вправо
+	case 'l': case 'L': return run->leftNode;   // влево
+	}
+}
+int directionOfSort(char direction, int theBest, int run)
+{
+	switch (direction)
+	{
+		start:
+	case 'h': return theBest > run;   // вправо
+	case 'l': return theBest < run;   // влево
+	default:printf("\nНеверная операция, попробуйте еще раз");
+		goto start;
+	}
+}
+void cleanDataOfStudents(struct nodeOfCircle2 **headOfCircle)
+{
+	if (!(*headOfCircle))
+	{
+		printf("\nПамять очищена ");
+		return;
+	}
+	if ((*headOfCircle)->rightNode == (*headOfCircle))
+	{
+		cleanDataOfGrades(&((*headOfCircle)->personalInformation->gradesOfStudent));
+		free((*headOfCircle));
+		printf("\nПамять очищена ");
+		return;
+	}
+	struct nodeOfCircle2* run;
+	struct nodeOfCircle2* next;
+	run = (*headOfCircle)->rightNode;
+	next = (*headOfCircle)->rightNode->rightNode;
+
+	if ((*headOfCircle)->rightNode->rightNode == (*headOfCircle))
+	{
+		cleanDataOfGrades(&(run->personalInformation->gradesOfStudent));
+		free(run);
+		cleanDataOfGrades(&((*headOfCircle)->personalInformation->gradesOfStudent));
+		free((*headOfCircle));
+		printf("\nПамять очищена ");
+		return;
+	}
+	
+	do
+	{
+		cleanDataOfGrades(&(run->personalInformation->gradesOfStudent));
+		free(run);
+		run = next;
+		next=next->rightNode;
+	} while (next != (*headOfCircle));
+	cleanDataOfGrades(&(run->personalInformation->gradesOfStudent));
+	free(run);
+	cleanDataOfGrades(&((*headOfCircle)->personalInformation->gradesOfStudent));
+	free((*headOfCircle));
+	printf("\nПамять очищена ");
+}
+void cleanDataOfGrades(struct grades** headSteck)
+{
+	if (!(*headSteck))
+	return;
+	struct grades* previousNodeOfSteck;
+	do
+	{
+		previousNodeOfSteck = (*headSteck);
+		(*headSteck) = (*headSteck)->next;
+		free(previousNodeOfSteck);
+	} while ((*headSteck));	
+}
+void CorrectInput(int* Information)
+{
+	int correct;
+	int flag = 0;
+	correct = scanf("%d", Information);
+	do
+	{
+		if (flag)
+		{
+			printf("Неверный ввод, попробуйте еще раз: ");
+			rewind(stdin);
+			correct = scanf("%d", Information);
+		}
+		flag = 1;
+	} while (!(correct) || (*Information) <= 0);
+}
