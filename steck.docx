@@ -1,0 +1,362 @@
+// пример работы со стеком
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <string.h>
+#include <locale.h>
+#include <Windows.h>
+
+//#define _CRT_SECURE_NO_WARNINGS
+
+struct zap
+{
+	char inf[50];                   // информациое поле
+	struct zap *l;                         // поле адреса
+};
+void push(struct zap **);
+char* pop(struct zap **);
+void show(struct zap *);
+void sort1(struct zap *);
+int sort2(struct zap **);
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+	SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+	struct zap *s = NULL;              // указатель на вершину стека
+	char l, ss[50];
+	while (1)
+	{
+		puts("\nвид операции:\n  1-создать/добавить\n  2-удалить");
+		puts("  3-просмотреть\n  4-сортировка 1\n  5-сортировка 2");
+		puts("  0-окончить");
+		rewind(stdin);
+		l = getchar();
+		switch (l)
+		{
+		case '1': push(&s); break;
+		case '2': if (s)
+		{
+			strcpy(ss, pop(&s));
+			printf("%s", ss);
+		}
+				  else puts("стек пуст");
+			break;
+		case '3': show(s); break;
+		case '4': if (s) sort1(s); break;
+		case '5': if (s) sort2(&s); break;
+		case '0': return 0;
+		default: printf("Ошибка, повторите \n");
+		}
+	}
+	return 0;
+}
+
+// функция cоздания/добавления в стек
+void push(struct zap **s)
+{
+	struct zap *s1 = *s;
+	do
+	{
+		if (!(*s = (struct zap *)calloc(1, sizeof(struct zap))))  // указатель на новый элемент стека
+		{
+			puts("Нет свободной памяти");
+			return;
+		}
+		puts("Введите информацию в поле inf");
+		rewind(stdin);
+		gets((*s)->inf);
+		(*s)->l = s1;              // новый эл-т стека "ссылается" на элемент вершину стека
+		s1 = *s;                   // новый элемент становится вершиной стека
+		puts("Продолжить (q/n)");
+		rewind(stdin);
+	} while (getchar() == 'q');
+}
+
+// функция просмотра элементов стека
+void show(struct zap *s)
+{
+	if (!s)
+	{
+		puts("Стек пуст");
+		return;
+	}
+	do
+	{
+		printf("    %s\n", s->inf);  // вывод информационного поля пекущего эл-та стека
+		s = s->l;                    // переход "вниз" к предыдущему эл-ту стека
+	} while (s);
+}
+
+// функция удаления последнего элемента стека
+// (с вершины стека)
+char* pop(struct zap **s)
+{
+	struct zap *s1, ss;
+	//char st[50];
+	//strcpy(st, (*s)->inf);  // в st копируется содержимое информ. поля с вершины стека
+	s1 = *s;                // запоминаем указатель на вершину стека      
+	ss = **s;               // запоминаем содержимое вершины стека
+	*s = (*s)->l;           // указатель передвигаем "вниз" по стеку
+	free(s1);               // удаляем элемент с вершины стека
+	return ss.inf;
+}
+
+// функция сортировки элементов списка организованного
+// в виде перестановкой содержимого элементов стека
+void sort1(struct zap *s)
+{
+	struct zap *s1, *s2;
+	char inf[50];
+	for (; s->l; s = s->l)                // выбор элемента списка к упорядочиванию
+	{
+		s1 = s;                           // запиминаем адрес выбранного элемента списка
+		for (s2 = s->l; s2; s2 = s2->l)   // перебор эл-тов списка "ниже" выбранного
+			if (strcmp(s1->inf, s2->inf) > 0)   // найден элемент s2 с меньшим значением
+				s1 = s2;                      // запоминаем найденный элемент списка
+		if (s1 != s)                      // т.е. был найден элемент с меньшим значением 
+		{                                 // чем выбранный s
+			strcpy(inf, s1->inf);         // замена содержимого s <-> s1
+			strcpy(s1->inf, s->inf);
+			strcpy(s->inf, inf);
+		}
+	}
+}
+
+ /*функция сортировки элементов списка организованного
+ в виде стека изменением указателей элементов стека*/
+//void sort2(struct zap **s)
+//{
+//	struct zap *ss, *s1=NULL , *s2=NULL, *s3=NULL, *s4 = NULL;
+//	ss = (struct zap *)calloc(1, sizeof(struct zap));
+//	ss->l = *s;                              // доп. элемент указывает на вершину стека
+//
+//	for (; ss->l->l;)                        // цикл ДО последнего эл-та списка
+//	{
+//		s1 = ss->l;                          // выбор элемента списка к упорядочиванию
+//		for (s2 = ss->l; s2->l; s2 = s2->l)  // перебор последующих эл-тов списка ДО последнего
+//			if (strcmp(s1->inf, s2->l->inf) > 0)   // сравнение содержимого двух эл-тов списка
+//			{                                    // найдено новое меньшее значение
+//				s1 = s2->l;                      // адрес текущего минимального эл-та
+//				s3 = s2;                         // адрес элемента перед минимальным
+//			}
+//		if (s1 != ss->l)                     // найденный меньший не совпадает с выбранным 
+//		{
+//			s3->l = s1->l;                   // исключение из списка найденного меньшего
+//			s1->l = ss->l;                   // меньший "вставляется" перед выбранным
+//			ss->l = s1;                      // предыдущий перед выбранным указывает на найденный меньший
+//		}
+//		if (!s4)
+//			s2 = ss;
+//
+//		ss = ss->l;                         // переход к следующему упорядочиваемому эл-ту
+//		if (!s4)
+//		{
+//			free(s2);                       // удаление дополнительного (временного) элемента
+//			*s = s4 = s1;                    // новая вершина стека
+//		}
+//	}
+//}
+
+//void sort2(struct zap **s)  ///////////////////////////////////////////////кал
+//{
+//	struct zap *s1 = NULL, *s2 = NULL, *s3 = NULL, *s4;
+//
+//	//s4 = (struct zap *)calloc(1, sizeof(struct zap));
+//	s4 = *s;
+//
+//	for (; s4->l;)                        // цикл ДО последнего эл-та списка
+//	{
+//		s1 = s4;                          // выбор элемента списка к упорядочиванию
+//		for (s2 = s4; s2->l; s2 = s2->l)  // перебор последующих эл-тов списка ДО последнего			if (strcmp(s1->inf, s2->l->inf) > 0)   // сравнение содержимого двух эл-тов списка
+//		{
+//			if (strcmp(s1->inf, s2->l->inf) > 0)// найдено новое меньшее значение
+//				s1 = s2->l;                      // адрес текущего минимального эл-та
+//			s3 = s2;                         // адрес элемента перед минимальным
+//		}
+//		if (s1 != s4)                     // найденный меньший не совпадает с выбранным 
+//		{
+//			s3->l = s1->l;                   // исключение из списка найденного меньшего
+//			s1->l = s4;                   // меньший "вставляется" перед выбранным
+//			s4 = s1; // кал                     // предыдущий перед выбранным указывает на найденный меньший
+//			//*s = s4;
+//		}
+//
+//		s4 = (s4)->l;
+//		//s2 = *s;
+//	}
+//	//*s = s4;
+//}
+////////////////////////////////////////кал
+
+
+int sort2(struct zap** head)
+{
+	int iResult = 0;
+	if (*head != NULL) {                                                           // not empty
+		struct zap *borderEl, *prevBorderEl=NULL, *seekNextEl, *minEl, *prevMinEl;
+		borderEl = *head;              // min это как начало чекинга лучших для border
+		//prevBorderEl = NULL;
+		while (borderEl->l != NULL) {      // cycle for border         
+			prevMinEl = NULL;
+			minEl = borderEl;                // start for check
+			seekNextEl = borderEl;
+			while (seekNextEl->l != NULL) {  
+				if (strcmp(minEl->inf, seekNextEl->l->inf) > 0) {
+					minEl = seekNextEl->l;
+					prevMinEl = seekNextEl;
+				}
+				seekNextEl = seekNextEl->l;
+			}
+			if (prevMinEl != NULL) {                                     //indicator
+				prevMinEl->l = prevMinEl->l->l;// minEL->next
+				minEl->l = borderEl;
+				if (prevBorderEl != NULL) {         //it is created in order to not lose
+					prevBorderEl->l = minEl;     // 1111111111111111111
+				}                                       //else
+				if (borderEl == *head) {
+					(*head) = minEl;  ////////////////!!!!!!!!!! pointer to head, compare Pavel and Lucik
+				}
+			}
+			else {
+				borderEl = borderEl->l; // пока всех лучших не перекинем за границу
+			}
+			prevBorderEl = minEl;
+		}
+	}
+
+	else {
+		iResult = -1;
+	}
+	return iResult;
+}
+
+
+
+
+
+
+
+                                         //Pavel
+
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <malloc.h>
+//#include <string.h>
+//
+//#define TXT_LEN 40
+//
+//typedef struct _TxtList
+//{
+//	char infText[TXT_LEN];
+//	struct _TxtList* next;
+//}TxtList, *PTxtList;
+//
+//int OutputToCnsList(TxtList* head);
+//int AddElToList(TxtList** head, char infText[TXT_LEN]);
+//int SortTxtList(TxtList** head);
+//
+//void main()
+//{
+//	TxtList* mainList = NULL;
+//	AddElToList(&mainList, "d");
+//	AddElToList(&mainList, "c");
+//	AddElToList(&mainList, "b");
+//	AddElToList(&mainList, "a");
+//	AddElToList(&mainList, "e");
+//
+//	if (OutputToCnsList(mainList) == -1)
+//		printf("The list is empty");
+//
+//	printf("============================\n");
+//	SortTxtList(&mainList);
+//	OutputToCnsList(mainList);
+//}
+//
+//int OutputToCnsList(TxtList* head)
+//{
+//	int iResult = 0;
+//	if (head != NULL) {
+//		while (head != NULL) {
+//			printf_s("%s\n", head->infText);
+//			head = head->next;
+//		}
+//	}
+//	else {
+//		iResult = -1;
+//	}
+//	return iResult;
+//}
+//
+//int AddElToList(TxtList** head, char infText[TXT_LEN])
+//{
+//	int iResult = 0;
+//	TxtList* CurEl = *head;                 //&&&&&& why you haven't used the *PTxtList
+//	if (*head != NULL) {
+//		while (CurEl->next != NULL) {
+//			CurEl = CurEl->next;
+//		}
+//		CurEl->next = calloc(1, sizeof(TxtList));
+//		CurEl = CurEl->next;
+//	}
+//	else {
+//		*head = calloc(1, sizeof(TxtList));
+//		CurEl = *head;
+//	}
+//
+//	if (CurEl != NULL) {
+//		strcpy_s(CurEl->infText, TXT_LEN, infText);
+//		CurEl->next = NULL;
+//	}
+//	else {
+//		iResult = -1;  /////////////////////&&&&&&&&&&&&
+//	}
+//
+//	return iResult;
+//}
+//
+//
+//int SortTxtList(TxtList** head)
+//{
+//	int iResult = 0;
+//	if (*head != NULL) {                                                           // not empty
+//		TxtList *borderEl, *prevBorderEl=NULL, *seekNextEl, *minEl, *prevMinEl;
+//		borderEl = *head;              // min это как начало чекинга лучших для border
+//		//prevBorderEl = NULL;
+//		while (borderEl->next != NULL) {      // cycle for border         
+//			prevMinEl = NULL;
+//			minEl = borderEl;                // start for check
+//			seekNextEl = borderEl;
+//			while (seekNextEl->next != NULL) {  
+//				if (strcmp(minEl->infText, seekNextEl->next->infText) > 0) {
+//					minEl = seekNextEl->next;
+//					prevMinEl = seekNextEl;
+//				}
+//				seekNextEl = seekNextEl->next;
+//			}
+//			if (prevMinEl != NULL) {                                     //indicator
+//				prevMinEl->next = prevMinEl->next->next;// minEL->next
+//				minEl->next = borderEl;
+//				if (prevBorderEl != NULL) {         //it is created in order to not lose
+//					prevBorderEl->next = minEl;     // 1111111111111111111
+//				}                                       //else
+//				if (borderEl == *head) {
+//					(*head) = minEl;  ////////////////!!!!!!!!!! pointer to head, compare Pavel and Lucik
+//				}
+//			}
+//			else {
+//				borderEl = borderEl->next; // пока всех лучших не перекинем за границу
+//			}
+//			prevBorderEl = minEl;
+//		}
+//	}
+//
+//	else {
+//		iResult = -1;
+//	}
+//	return iResult;
+//}
