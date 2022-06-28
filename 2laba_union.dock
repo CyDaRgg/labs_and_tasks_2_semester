@@ -1,0 +1,711 @@
+//#include <stdio.h>
+//#include <locale.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <Windows.h>
+//
+//
+//struct person_information
+//{
+//	char* surname;
+//	char*name;
+//	char*patronymic;
+//
+//	union
+//	{
+//		
+//		
+//		struct fmb
+//		{
+//			
+//			char* father;
+//			char*mother;
+//			char*brother;
+//			char*sister;
+//		}a;                    //a
+//
+//		struct fmbs
+//		{
+//			
+//			char* father;
+//			char*mother;
+//			char*brother;
+//			char*sister;
+//		}b;                    //б
+//
+//		struct mbs
+//		{
+//			
+//			char* father;
+//			char*mother;
+//			char*brother;
+//			char*sister;
+//		}c;                    //в
+//
+//	} relatives;              //union
+//};                 //person_information
+//
+//
+//void inputError()
+//{
+//	printf("неправильный ввод, попробуйте ещё раз\n");
+//	rewind(stdin);
+//}
+//
+//int input(struct person_information *mas, int number,char*argv[])
+//{
+//	for (int i = 0; i < number; i++)
+//	{
+//
+//
+//		if (strcmp(argv[1], "only struct") && strcmp(argv[1], "struct_union"))
+//		{
+//			
+//			free(mas);
+//			return 1;
+//		}
+//
+//		if (strcmp(argv[2], "a") && strcmp(argv[2], "b") && strcmp(argv[2], "c")&& strcmp(argv[2],"non"))
+//		{
+//			
+//			free(mas);
+//			return 1;
+//		}
+//
+//		if ((!strcmp(argv[1], "only struct")) && (strcmp(argv[2], "non")))
+//		{
+//			
+//			free(mas);
+//			return 1;
+//		}
+//		if ((!strcmp(argv[1], "struct_union")) && !(strcmp(argv[2], "non")))
+//		{
+//
+//			free(mas);
+//			return 1;
+//		}
+//
+//
+//
+//		mas[i].surname = (char*)calloc(30, sizeof(char));
+//		mas[i].name = (char*)calloc(30, sizeof(char));
+//		mas[i].patronymic = (char*)calloc(30, sizeof(char));
+//
+//	
+//		
+//		
+//		if (!strcmp(argv[1], "only struct"))
+//		{
+//			rewind(stdin);
+//			printf("\nВведите информацию о %d студенте ", i+1);
+//			printf("\nВведите фамилию студента: ");
+//			gets_s((mas[i].surname), 30);
+//			printf("\nВведите имя студента: ");
+//			gets_s((mas[i].name), 30);
+//			printf("\nВведите отчество студента: ");
+//			gets_s((mas[i].patronymic),30);
+//			printf("\nИнформация о %d студенте введена\n", i+1);
+//			
+//		}
+//
+//
+//		
+//		if (!strcmp(argv[1], "struct_union"))
+//		{
+//			//if (!strcmp(argv[2], "a"))
+//			//{
+//				rewind(stdin);
+//				printf("\nВведите информацию о %d студенте ", i+1);
+//				printf("\nВведите фамилию студента: ");
+//				gets_s((mas[i].surname), 30);
+//				printf("\nВведите имя студента: ");
+//				gets_s((mas[i].name), 30);
+//				printf("\nВведите отчество студента: ");
+//				gets_s((mas[i].patronymic), 30);
+//
+//				mas[i].relatives.a.father = (char*)calloc(30, sizeof(char));
+//				mas[i].relatives.a.mother = (char*)calloc(30, sizeof(char));
+//				mas[i].relatives.a.brother = (char*)calloc(30, sizeof(char));
+//				mas[i].relatives.a.sister = (char*)calloc(30, sizeof(char));
+//
+//
+//				printf("\nВведите имя отца студента: ");
+//				gets_s((mas[i].relatives.a.father), 30);
+//				printf("\nВведите имя матери студента: ");
+//				gets_s((mas[i].relatives.a.mother), 30);
+//				printf("\nВведите имя брата студента: ");
+//				gets_s((mas[i].relatives.a.brother), 30);
+//				printf("\nВведите имя сестры студента: ");
+//				gets_s((mas[i].relatives.a.sister), 30);
+//				printf("\nИнформация о %d студенте введена\n", i+1);
+//			//}
+//
+//			/*if (!strcmp(argv[2], "b"))
+//			{
+//				rewind(stdin);
+//				printf("\nВведите информацию о %d студенте ", i+1);
+//				printf("\nВведите фамилию студента: ");
+//				gets_s((mas[i].surname), 30);
+//				printf("\nВведите имя студента: ");
+//				gets_s((mas[i].name), 30);
+//				printf("\nВведите отчество студента: ");
+//				gets_s((mas[i].patronymic), 30);
+//
+//
+//				mas[i].relatives.b.father = (char*)calloc(30, sizeof(char));
+//				mas[i].relatives.b.mother = (char*)calloc(30, sizeof(char));
+//				mas[i].relatives.b.brother = (char*)calloc(30, sizeof(char));
+//				mas[i].relatives.b.sister = (char*)calloc(30, sizeof(char));
+//
+//				printf("\nВведите имя отца студента: ");
+//				gets_s((mas[i].relatives.b.father), 30);
+//				printf("\nВведите имя матери студента: ");
+//				gets_s((mas[i].relatives.b.mother), 30);
+//				printf("\nВведите имя брата студента: ");
+//				gets_s((mas[i].relatives.b.brother), 30);
+//				printf("\nВведите имя сестры студента: ");
+//				gets_s((mas[i].relatives.b.sister), 30);
+//				printf("\nИнформация о %d студенте введена\n", i+1);
+//			}
+//
+//
+//			if (!strcmp(argv[2], "c"))
+//			{
+//				rewind(stdin);
+//				printf("\nВведите информацию о %d студенте ", i+1);
+//				printf("\nВведите фамилию студента: ");
+//				gets_s((mas[i].surname), 30);
+//				printf("\nВведите имя студента: ");
+//				gets_s((mas[i].name), 30);
+//				printf("\nВведите отчество студента: ");
+//				gets_s((mas[i].patronymic), 30);
+//
+//
+//				mas[i].relatives.c.father = (char*)calloc(30, sizeof(char));
+//				mas[i].relatives.c.mother = (char*)calloc(30, sizeof(char));
+//				mas[i].relatives.c.brother = (char*)calloc(30, sizeof(char));
+//				mas[i].relatives.c.sister = (char*)calloc(30, sizeof(char));
+//
+//				printf("\nВведите имя отца студента: ");
+//				gets_s((mas[i].relatives.c.father), 30);
+//				printf("\nВведите имя матери студента: ");
+//				gets_s((mas[i].relatives.c.mother), 30);
+//				printf("\nВведите имя брата студента: ");
+//				gets_s((mas[i].relatives.c.brother), 30);
+//				printf("\nВведите имя сестры студента: ");
+//				gets_s((mas[i].relatives.c.sister), 30);
+//				printf("\nИнформация о %d студенте введена\n", i+1);
+//			}*/
+//
+//		}
+//
+//	}
+//
+//	return 0;
+//}
+//
+//void output(struct person_information *mas, int number, char*argv[])
+//{
+//	setlocale(LC_ALL, "RUS");
+//	for (int i = 0; i < number; i++)
+//	{
+//
+//		if (!strcmp(argv[2], "non"))
+//		{
+//			printf("\nВывод информации о %d студенте ", i+1);
+//
+//			printf("\nФамилия студента: %s", mas[i].surname);
+//
+//			printf("\nИмя студента: %s", mas[i].name);
+//
+//			printf("\nОтчество студента: %s", mas[i].patronymic);
+//
+//			printf("\nИформация о %d студенте выведена\n", i+1);
+//		}
+//
+//			
+//		if (!strcmp(argv[2],"a"))     
+//		{
+//			printf("\nВывод информации о %d студенте ", i+1);
+//
+//			printf("\nФамилия студента: %s", mas[i].surname);
+//			
+//			printf("\nИмя студента: %s",mas[i].name);
+//			
+//			printf("\nОтчество студента: %s", mas[i].patronymic);
+//
+//
+//
+//			printf("\nОтец студента: %s", mas[i].relatives.a.father);
+//
+//			printf("\nМать студента: %s", mas[i].relatives.a.mother);
+//
+//			printf("\nБрат студента: %s", mas[i].relatives.a.brother);
+//			printf("\nИформация о %d студенте выведена\n", i+1);
+//
+//		}
+//
+//
+//		if (!strcmp(argv[2], "b"))
+//			{
+//
+//				printf("\nВывод информации о %d студенте ", i+1);
+//
+//				printf("\nФамилия студента: %s", mas[i].surname);
+//
+//				printf("\nИмя студента: %s", mas[i].name);
+//
+//				printf("\nОтчество студента: %s\n", mas[i].patronymic);
+//
+//
+//
+//				printf("\nОтец студента:%s", mas[i].relatives.b.father);
+//			
+//				printf("\nМать студента:%s", mas[i].relatives.b.mother);
+//
+//				printf("\nБрат студента: %s", mas[i].relatives.b.brother);
+//
+//				printf("\nСестра студента: %s", mas[i].relatives.b.sister);
+//				printf("\nИформация о %d студенте выведена\n", i+1);
+//
+//				
+//
+//			}
+//
+//		if (!strcmp(argv[2], "c"))
+//			    {
+//				  printf("\nВывод информации о %d студенте ", i+1);
+//
+//				   printf("\nФамилия студента: %s", mas[i].surname);
+//
+//				   printf("\nИмя студента: %s", mas[i].name);
+//
+//				   printf("\nОтчество студента: %s\n", mas[i].patronymic);
+//
+//
+//
+//				  printf("\nМать студента: %s", mas[i].relatives.c.mother);
+//
+//				  printf("\nБрат студента: %s", mas[i].relatives.c.brother);
+//
+//				  printf("\nСестра студента: %s", mas[i].relatives.c.sister);
+//				  printf("\nИформация о %d студенте выведена\n", i+1);
+//			    }
+//
+//	
+//	}
+//
+//
+//}
+//
+//	int main(int argc, char *argv[])
+//{
+//		system("color F0");
+//		SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+//		SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+//	setlocale(LC_ALL, "RUS");
+//	int number;
+//
+//	struct person_information* mas;
+//
+//	printf("Введите количество студентов:\n");
+//	while (!(scanf_s("%d", &number)) || number <= 0)
+//	{
+//		inputError();
+//	}
+//	
+//
+//	if (!(mas = (struct person_information*)calloc(number, sizeof(struct person_information))))
+//	{
+//		inputError();
+//		return 0;
+//	}
+//
+//	if (input(mas, number, argv))
+//	{
+//		inputError();
+//		return 0;
+//	}
+//	output(mas, number, argv);
+//
+//	for (int i = 0; i < number; i++)
+//	{
+//		free(mas[i].surname);
+//		free(mas[i].name);
+//		free(mas[i].patronymic);
+//
+//		free(mas[i].relatives.a.father);
+//		free(mas[i].relatives.a.mother);
+//		free(mas[i].relatives.a.brother);
+//		free(mas[i].relatives.a.sister);
+//	}
+//	free(mas);
+//	return 0;
+//}
+//
+//
+
+
+
+
+
+
+	//лучшая реализация//
+
+#include <stdio.h>
+#include <locale.h>
+#include <stdlib.h>
+#include <string.h>
+#include <Windows.h>
+
+
+	struct person_information
+	{
+		char* surname;
+		char*name;
+		char*patronymic;
+
+		union
+		{
+
+
+			struct fmb
+			{
+
+				char* father;
+				char*mother;
+				char*brother;
+			}a;                    //a
+
+			struct fmbs
+			{
+
+				char* father;
+				char*mother;
+				char*brother;
+				char*sister;
+			}b;                    //б
+
+			struct mbs
+			{
+				char*mother;
+				char*brother;
+				char*sister;
+			}c;                    //в
+
+		} relatives;              //union
+	};                 //person_information
+
+
+	void inputError()
+	{
+		printf("неправильный ввод, попробуйте ещё раз\n");
+		rewind(stdin);
+	}
+
+
+	struct person_information input(struct person_information mas, int number, char*argv[])
+	{
+
+
+		mas.surname = (char*)calloc(30, sizeof(char));
+		mas.name = (char*)calloc(30, sizeof(char));
+		mas.patronymic = (char*)calloc(30, sizeof(char));
+
+
+
+
+		if (!strcmp(argv[1], "only struct"))
+		{
+			rewind(stdin);
+			printf("\nВведите информацию о  студенте ");
+			printf("\nВведите фамилию студента: ");
+			gets_s((mas.surname), 30);
+			printf("\nВведите имя студента: ");
+			gets_s((mas.name), 30);
+			printf("\nВведите отчество студента: ");
+			gets_s((mas.patronymic), 30);
+			printf("\nИнформация о студенте введена\n");
+
+		}
+
+
+
+		if (!strcmp(argv[1], "struct_union"))
+		{
+			if (!strcmp(argv[2], "a"))
+			{
+				rewind(stdin);
+				printf("\nВведите информацию о  студенте ");
+				printf("\nВведите фамилию студента: ");
+				gets_s((mas.surname), 30);
+				printf("\nВведите имя студента: ");
+				gets_s((mas.name), 30);
+				printf("\nВведите отчество студента: ");
+				gets_s((mas.patronymic), 30);
+
+				mas.relatives.a.father = (char*)calloc(30, sizeof(char));
+				mas.relatives.a.mother = (char*)calloc(30, sizeof(char));
+				mas.relatives.a.brother = (char*)calloc(30, sizeof(char));
+
+
+
+				printf("\nВведите имя отца студента: ");
+				gets_s((mas.relatives.a.father), 30);
+				printf("\nВведите имя матери студента: ");
+				gets_s((mas.relatives.a.mother), 30);
+				printf("\nВведите имя брата студента: ");
+				gets_s((mas.relatives.a.brother), 30);
+				printf("\nИнформация о  студенте введена\n");
+
+			}
+
+
+
+			if (!strcmp(argv[2], "b"))
+			{
+				rewind(stdin);
+				printf("\nВведите информацию о  студенте ");
+				printf("\nВведите фамилию студента: ");
+				gets_s((mas.surname), 30);
+				printf("\nВведите имя студента: ");
+				gets_s((mas.name), 30);
+				printf("\nВведите отчество студента: ");
+				gets_s((mas.patronymic), 30);
+
+				mas.relatives.b.father = (char*)calloc(30, sizeof(char));
+				mas.relatives.b.mother = (char*)calloc(30, sizeof(char));
+				mas.relatives.b.brother = (char*)calloc(30, sizeof(char));
+				mas.relatives.b.sister = (char*)calloc(30, sizeof(char));
+
+
+				printf("\nВведите имя отца студента: ");
+				gets_s((mas.relatives.b.father), 30);
+				printf("\nВведите имя матери студента: ");
+				gets_s((mas.relatives.b.mother), 30);
+				printf("\nВведите имя брата студента: ");
+				gets_s((mas.relatives.b.brother), 30);
+				printf("\nВведите имя сестры студента: ");
+				gets_s((mas.relatives.b.sister), 30);
+				printf("\nИнформация о  студенте введена\n");
+
+
+			}
+
+
+
+			if (!strcmp(argv[2], "c"))
+			{
+				rewind(stdin);
+				printf("\nВведите информацию о студенте ");
+				printf("\nВведите фамилию студента: ");
+				gets_s((mas.surname), 30);
+				printf("\nВведите имя студента: ");
+				gets_s((mas.name), 30);
+				printf("\nВведите отчество студента: ");
+				gets_s((mas.patronymic), 30);
+
+
+				mas.relatives.c.mother = (char*)calloc(30, sizeof(char));
+				mas.relatives.c.brother = (char*)calloc(30, sizeof(char));
+				mas.relatives.c.sister = (char*)calloc(30, sizeof(char));
+
+
+
+				printf("\nВведите имя матери студента: ");
+				gets_s((mas.relatives.c.mother), 30);
+				printf("\nВведите имя брата студента: ");
+				gets_s((mas.relatives.c.brother), 30);
+				printf("\nВведите имя сестры студента: ");
+				gets_s((mas.relatives.c.sister), 30);
+				printf("\nИнформация о  студенте введена\n");
+
+
+			}
+
+		}
+
+
+
+
+		return mas;
+	}
+
+
+
+	void output(struct person_information mas, int number, char*argv[])
+	{
+
+
+		if (!strcmp(argv[2], "non"))
+		{
+			printf("\nВывод информации о студенте ");
+
+			printf("\nФамилия студента: %s", mas.surname);
+
+			printf("\nИмя студента: %s", mas.name);
+
+			printf("\nОтчество студента: %s", mas.patronymic);
+
+			printf("\nИформация о  студенте выведена\n");
+		}
+
+
+		if (!strcmp(argv[2], "a"))
+		{
+			printf("\nВывод информации о  студенте ");
+
+			printf("\nФамилия студента: %s", mas.surname);
+
+			printf("\nИмя студента: %s", mas.name);
+
+			printf("\nОтчество студента: %s", mas.patronymic);
+
+
+
+			printf("\nОтец студента: %s", mas.relatives.a.father);
+
+			printf("\nМать студента: %s", mas.relatives.a.mother);
+
+			printf("\nБрат студента: %s", mas.relatives.a.brother);
+			printf("\nИформация о  студенте выведена\n");
+
+		}
+
+
+		if (!strcmp(argv[2], "b"))
+		{
+
+			printf("\nВывод информации о студенте ");
+
+			printf("\nФамилия студента: %s", mas.surname);
+
+			printf("\nИмя студента: %s", mas.name);
+
+			printf("\nОтчество студента: %s\n", mas.patronymic);
+
+
+
+			printf("\nОтец студента:%s", mas.relatives.b.father);
+
+			printf("\nМать студента:%s", mas.relatives.b.mother);
+
+			printf("\nБрат студента: %s", mas.relatives.b.brother);
+
+			printf("\nСестра студента: %s", mas.relatives.b.sister);
+			printf("\nИформация о  студенте выведена\n");
+
+
+
+		}
+
+		if (!strcmp(argv[2], "c"))
+		{
+			printf("\nВывод информации о  студенте ");
+
+			printf("\nФамилия студента: %s", mas.surname);
+
+			printf("\nИмя студента: %s", mas.name);
+
+			printf("\nОтчество студента: %s\n", mas.patronymic);
+
+
+
+			printf("\nМать студента: %s", mas.relatives.c.mother);
+
+			printf("\nБрат студента: %s", mas.relatives.c.brother);
+
+			printf("\nСестра студента: %s", mas.relatives.c.sister);
+			printf("\nИформация о  студенте выведена\n");
+		}
+
+
+	}
+
+
+
+
+
+
+
+	int main(int argc, char *argv[])
+	{
+
+		system("color F0");
+		SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+		SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+		setlocale(LC_ALL, "RUS");
+		int i = 0;
+		int number;
+
+		struct person_information* mas;
+		//	struct person_information x;
+
+		printf("Введите количество студентов:\n");
+		while (!(scanf_s("%d", &number)) || number <= 0)
+		{
+			inputError();
+		}
+
+
+		if (!(mas = (struct person_information*)calloc(number, sizeof(struct person_information))))
+		{
+			inputError();
+			return 0;
+		}
+
+		/////////////////////////////////проверка на параметры командной строки////////////////////////////////////////////////////////////////////////////////////////
+		if (strcmp(argv[1], "only struct") && strcmp(argv[1], "struct_union"))
+		{
+
+			free(mas);
+			return 1;
+		}
+
+		if (strcmp(argv[2], "a") && strcmp(argv[2], "b") && strcmp(argv[2], "c") && strcmp(argv[2], "non"))
+		{
+
+			free(mas);
+			return 1;
+		}
+
+		if ((!strcmp(argv[1], "only struct")) && (strcmp(argv[2], "non")))
+		{
+
+			free(mas);
+			return 1;
+		}
+		if ((!strcmp(argv[1], "struct_union")) && !(strcmp(argv[2], "non")))
+		{
+
+			free(mas);
+			return 1;
+		}
+		///////////////////////////////////////////////////////////////
+		for (i = 0; i < number; i++)
+		{
+			mas[i] = input(mas[i], number, argv);
+
+		}
+		///////////////////////////////////////////////////////////////
+		for (i = 0; i < number; i++)
+		{
+			output(mas[i], number, argv);
+
+		}
+
+
+		for (int i = 0; i < number; i++)
+		{
+			free(mas[i].surname);
+			free(mas[i].name);
+			free(mas[i].patronymic);
+
+			free(mas[i].relatives.b.father);
+			free(mas[i].relatives.b.mother);
+			free(mas[i].relatives.b.brother);
+			free(mas[i].relatives.b.sister);
+		}
+		free(mas);
+		return 0;
+	}
