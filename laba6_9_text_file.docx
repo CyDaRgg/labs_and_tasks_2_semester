@@ -1,0 +1,301 @@
+#include <stdio.h>
+#include <locale.h>
+#include <stdlib.h>
+#include <string.h>
+#include <Windows.h>
+#include <malloc.h>
+#include <io.h>
+
+#define No_last_Word 0
+#define Indicator_Of_Last_Word 1
+
+
+void Skipping_Spaces(FILE*f)
+{
+	fpos_t a;
+	int flag = 0;
+	char Current_Symbol;
+	char Right_Symbol;
+	do                               //убираем
+	{
+		
+		Current_Symbol = getc(f);
+
+	
+		if (feof(f))
+			return;
+
+	}while (Current_Symbol == ' '|| Current_Symbol=='\n');
+
+
+	
+	fseek(f, -1, SEEK_CUR);
+	
+
+	          // пробелы
+}
+
+void Skipping_Word(FILE*f)            //проход
+{
+	char Current_Symbol;
+	char Right_Symbol;
+	do
+	{
+		Current_Symbol = getc(f);
+
+		if (feof(f))
+			return;
+
+	} while (Current_Symbol != ' '&& Current_Symbol!='\n');
+
+	fseek(f, -1, SEEK_CUR);
+	//0           
+}                                   //по слову
+
+
+
+
+int Check(FILE *f1, FILE *f2, fpos_t Position_Of_First_Symbol)
+{
+	int Last_Word = 0;
+	int Number_Of_Matches = 0;
+	char Symbol_Of_File1;
+	char Symbol_Of_File2;
+	char Right_Symbol_1;
+	char Right_Symbol_2;
+
+	fpos_t Position_Of_Right_Symbol_1;
+	fpos_t Position_Of_Right_Symbol_2;
+	fpos_t Check_For_Last_Word;
+
+	Skipping_Spaces(f2);
+	while (1)
+	{
+	
+		while (1)
+		{
+
+			Symbol_Of_File1 = getc(f1);
+			Symbol_Of_File2 = getc(f2);
+
+
+			if((Symbol_Of_File1 == '\n'&& Symbol_Of_File2 == ' ')         //считает, что \n и ' ' равны и пропускает
+				|| (Symbol_Of_File1 == ' '&& Symbol_Of_File2 == '\n')
+				|| (feof(f1) && feof(f2)))
+			{
+				fseek(f2, -1, SEEK_CUR);      //чтобы не было заскока на новое слово и пропуск его 
+				Number_Of_Matches++;   //если бы было Skipping_Spaces(f2); Skipping_Word(f2);
+				break;
+			}
+
+
+			if ( (Symbol_Of_File1 != Symbol_Of_File2) ) //когда отличие заключается в неравенстве
+				break;
+
+	
+
+			if ((Symbol_Of_File1 == ' ' && Symbol_Of_File2 == ' ')|| 
+				(Symbol_Of_File1=='\n'&&Symbol_Of_File2=='\n'))
+				
+			{
+				fseek(f2, -1, SEEK_CUR);      //чтобы не было заскока на новое слово и пропуск его 
+				Number_Of_Matches++;   //если бы было Skipping_Spaces(f2); Skipping_Word(f2);
+				break;
+			}
+
+
+		}
+		fseek(f1, Position_Of_First_Symbol, 0);
+		fseek(f2, -1, SEEK_CUR);
+
+		
+
+
+		Skipping_Word(f2);
+		Skipping_Spaces(f2);
+
+		if (feof(f2))
+			return Number_Of_Matches;
+
+	}
+	return Number_Of_Matches;
+}
+
+
+void input(FILE *f)
+{
+	
+	char Symbol;
+	rewind(stdin);
+	while (1)
+	{
+		scanf_s("%c", &Symbol);
+
+		if (Symbol == '@')
+			break;
+
+		fprintf(f, "%c", Symbol);
+	}
+
+	rewind(f);
+}
+void Out_Put(FILE *f)
+{
+	char Out_Put_Symbol;
+	
+	printf("|");  //для наглядности
+
+	rewind(f);
+	while(1)
+	{
+		Out_Put_Symbol = getc(f);
+
+		if (feof(f))
+			break;
+
+
+	  //getc(f) возвращает аски код символа файла.если конец, то EOF(в случае неудачи EOF )       
+			printf("%c", Out_Put_Symbol);	       //дает символ, НО УТП СМЕЩАЕТСЯ ПРОСТОО НА ОДИН СИМВОЛ ВПРАВО, НЕ АНАЛОГ fscanf_s
+
+		
+	} 
+	printf("|");
+	rewind(f);
+}
+
+
+//char Get_Right_Symbol(FILE *f, fpos_t Position_Of_First_Symbol)  // из-за skipping_word ловим крайний случай с EOF
+//{
+//	fpos_t Return_from_Right_Number;
+//
+//	char Right_Symbol_Of_Current_Word;
+//
+//	Skipping_Word(f);  // для последнего по другому
+//
+//	fgetpos(f, &Return_from_Right_Number);  //заметно преимущество при вводе |g r g|
+//	fseek(f, 1, 1);                        //где для анализа будет использоваться, проявляется для x|EOF
+//	Right_Symbol_Of_Current_Word = getc(f);
+//	fsetpos(f, &Return_from_Right_Number);
+//
+//	return Right_Symbol_Of_Current_Word;
+//
+//}
+//int Get_Right_Index(FILE*f, fpos_t Position_Of_First_Symbol)  //после пробелов до индекса идем
+//{
+//	fpos_t Last_Character_Number;
+//
+//	Skipping_Spaces(f);
+//	fgetpos(f, &Last_Character_Number);
+//
+//
+//	fsetpos(f, &Position_Of_First_Symbol); //возврат для Check
+//	return Last_Character_Number;
+//}
+
+int Checking(FILE *f, fpos_t Position_Of_First_Symbol)
+{
+	char Checking_For_Space_And_Emptines;
+	int Checking_For_Error = 1;
+
+	Checking_For_Space_And_Emptines = getc(f);
+	if (feof(f))
+	{
+		printf("\nНечего сравнивать");
+		return Checking_For_Error;
+	}
+
+	fsetpos(f, &Position_Of_First_Symbol);
+	return 0;
+}
+
+//int File_Length_Search(FILE*f)
+//{
+//	int Length_Of_File_1;
+//	fseek(f, 0, SEEK_END);               //поиск длины 1-го файла
+//	Length_Of_File_1 = ftell(f);
+//	Length_Of_File_1--;
+//	rewind(f);
+//	return Length_Of_File_1;
+//}
+
+
+int main()
+{
+	system("color F0");
+	setlocale(LC_ALL, "Russian");
+	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+	SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+
+	int counter = 0;
+	fpos_t Return_from_Right_Number;
+	fpos_t Position_Of_First_Symbol;
+	fpos_t Last_Character_Number;
+	int Number_Of_Matches;
+	char Out_Put_Symbol;
+	char Checking_For_Space_And_Emptines;
+	char Right_Symbol_Of_Current_Word;
+	int Length_Of_File_1;
+
+	FILE *f1;
+	FILE *f2;
+
+	/////////////////////////////////////
+
+	if (fopen_s(&f1, "files1.txt", "r+"))                 //возвращает 0 при успехе 
+		printf("Error, file didn't open");
+	//freopen_s(&f1, "files.txt", "w+",f1 );
+	//freopen_s()
+
+	if (fopen_s(&f2, "files2.txt", "r+"))             //возвращает 0 при успехе
+	{
+		printf("Error, file didn't open");
+		fclose(f1);
+	}
+
+	///////////////////////////////////////
+	//printf("Заполните 1-ый файл:");
+	//input(f1);
+
+	//Length_Of_File_1 = File_Length_Search(f1);
+
+	//printf("Заполните 2-ой файл:");
+	//input(f2);
+
+	printf("\nВывод 1-го файла:");
+	Out_Put(f1);
+	printf("\nВывод 2-го файла:");
+	Out_Put(f2);
+	printf("\n");
+
+	Skipping_Spaces(f1);
+	do
+	{
+		counter++;
+		fgetpos(f1, &Position_Of_First_Symbol);
+
+		if (Checking(f1, Position_Of_First_Symbol))//не пробел ли или пустота
+			return 0;
+
+		//Right_Symbol_Of_Current_Word = Get_Right_Symbol(f1, Position_Of_First_Symbol);
+		//Last_Character_Number = Get_Right_Index(f1, Position_Of_First_Symbol);
+		//////////////////////////////////////////////////////////////////////////////////////
+
+		Number_Of_Matches = Check(f1, f2, Position_Of_First_Symbol);
+		printf("\n%d-е слово из первого файла совпало со словом из второго %d раз/раза\n", counter, Number_Of_Matches);
+
+		fseek(f2, 0, SEEK_SET);
+
+		/*if (Length_Of_File_1 == Last_Character_Number && Right_Symbol_Of_Current_Word == EOF)
+			return 0;*/
+		Skipping_Word(f1);
+		Skipping_Spaces(f1);
+
+		if (feof(f1))
+			return 0;
+
+	} while (1);
+
+	fclose(f1);
+	fclose(f2);
+	return 0;
+}
